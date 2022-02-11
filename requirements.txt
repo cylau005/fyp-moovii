@@ -1,5 +1,5 @@
 ﻿tensorflow-io==0.21.0
-tensorflow-io-gcs-filesystem==0.22.0
+tensorflow-io-gcs-filesystem==0.21.0
 tensorflow-metadata==1.4.0
 tensorflow-model-optimization==0.7.0
 tensorflow-text==2.7.2
