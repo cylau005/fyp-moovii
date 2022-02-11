@@ -141,7 +141,7 @@ opencv-python==4.5.4.58
 opencv-python-headless==4.5.4.58
 openpyxl==2.6.2
 opt-einsum==3.3.0
-orjson==3.6.4
+orjson==3.6.1
 packaging==19.0
 panda==0.3.1
 pandas==0.24.2
