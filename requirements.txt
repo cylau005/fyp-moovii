@@ -120,7 +120,6 @@ mistune==0.8.4
 mkl-fft==1.0.6
 mkl-random==1.0.1.1
 mock==3.0.5
-movierecommender==1.0
 mpmath==1.1.0
 msgpack==0.6.1
 multipledispatch==0.6.0
