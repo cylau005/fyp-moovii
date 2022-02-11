@@ -2,7 +2,7 @@
 tensorflow-io-gcs-filesystem==0.21.0
 tensorflow-metadata==1.2.0
 tensorflow-model-optimization==0.7.0
-tensorflow-text==2.7.2
+tensorflow-text==2.6.0
 termcolor==1.1.0
 terminado==0.8.2
 testpath==0.4.2
