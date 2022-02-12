@@ -1,1 +1,6 @@
+release: sed -i 's/managed = False/managed = True/' mysite/models.py
+release: python3 manage.py migrate --fake mysite zero
+release: python3 manage.py migrate mysite
+release: python3 manage.py migrate
+release: psql postgres://crzrodeqjnabav:73a195303f3caa3afd0a60471a7609b7f537dc73426923a68a1b3dd28288e8f3@ec2-54-209-221-231.compute-1.amazonaws.com:5432/d45ml82v09ghlu -f psqlcreatetable.sql
 web: gunicorn mysite.wsgi
