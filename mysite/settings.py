@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-t%x+km5=j=l!nihm%ov%ji!=_t!8lj1g5ky75d)ik+wiqa&+-)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['mysitelcy.herokuapp.com','127.0.0.1']
+ALLOWED_HOSTS = ['fyp-moovii.herokuapp.com','127.0.0.1']
 
 
 # Application definition
