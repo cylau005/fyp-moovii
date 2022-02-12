@@ -159,5 +159,7 @@ LOGOUT_REDIRECT_URL = "/"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+#AUTH_USER_MODEL = 'users.CustomUser'
+
 if found:
     django_heroku.settings(locals())
