@@ -11,7 +11,7 @@ idna==3.3
 lxml==4.6.4
 numpy==1.19.5
 outcome==1.1.0
-pandas==1.4.0
+pandas==1.1.5
 protobuf==3.19.1
 pycparser==2.21
 pyOpenSSL==22.0.0
