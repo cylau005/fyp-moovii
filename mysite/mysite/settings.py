@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'main.apps.MainConfig',
-    'register.apps.RegisterConfig'
+    #'register.apps.RegisterConfig',
+    'register',
 ]
 
 MIDDLEWARE = [
@@ -82,23 +83,23 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd45ml82v09ghlu',
-        'USER': 'crzrodeqjnabav',
-        'PASSWORD': '73a195303f3caa3afd0a60471a7609b7f537dc73426923a68a1b3dd28288e8f3',
-        'HOST': 'ec2-54-209-221-231.compute-1.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'd45ml82v09ghlu',
+#         'USER': 'crzrodeqjnabav',
+#         'PASSWORD': '73a195303f3caa3afd0a60471a7609b7f537dc73426923a68a1b3dd28288e8f3',
+#         'HOST': 'ec2-54-209-221-231.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
@@ -119,6 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#AUTH_USER_MODEL = 'register.Account'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -159,7 +161,7 @@ LOGOUT_REDIRECT_URL = "/"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-#AUTH_USER_MODEL = 'users.CustomUser'
+
 
 if found:
     django_heroku.settings(locals())

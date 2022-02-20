@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Account
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
-
+from django.contrib.admin.sites import NotRegistered
 # Register your models here.
 
 class AccountInline(admin.StackedInline):
