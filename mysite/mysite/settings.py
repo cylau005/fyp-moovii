@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     #'register.apps.RegisterConfig',
     'register',
+    'mysite',
 ]
 
 MIDDLEWARE = [

@@ -24,7 +24,6 @@ GENRES_CHOICES = [
     ('Musical','Musical'),
 ]
 
-
 class RegisterForm(UserCreationForm):
     email = forms.EmailField()
     genres = forms.CharField(label='What is your favorite genres?', 
