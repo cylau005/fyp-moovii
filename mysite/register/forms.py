@@ -28,8 +28,12 @@ class RegisterForm(UserCreationForm):
     email = forms.EmailField()
     genres = forms.CharField(label='What is your favorite genres?', 
             widget=forms.Select(choices=GENRES_CHOICES))
+    cc_number = forms.CharField(label='Credit Card Number')
+    cc_name = forms.CharField(label='Credit Card Name')
+    cc_expirydate = forms.CharField(label='Credit Card Expiry Date(MM/YY)')
+    cc_cvv = forms.CharField(label='Credit Card CVV')
 
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2","first_name","last_name","genres"]
+        fields = ["username", "email", "password1", "password2","first_name","last_name","genres","cc_number","cc_name","cc_expirydate","cc_cvv"]
 

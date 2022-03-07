@@ -30,6 +30,15 @@ class Account(models.Model):
     def __str__(self):
         return self.user.username
 
+class CreditCard(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    cc_number = models.CharField(verbose_name="cc_number", max_length=16, unique=True)
+    cc_name = models.CharField(verbose_name="cc_name", max_length=40, unique=True)
+    cc_expirydate = models.CharField(verbose_name="cc_expirydate", max_length=10, unique=True)
+    cc_cvv = models.CharField(verbose_name="cc_expirydate", max_length=3, unique=True)
+    
+    def __str__(self):
+        return self.user.username
 # class MyUserManager(BaseUserManager):
 #     def create_user(self, username, email, first_name, 
 #     last_name, cc_number, cc_name, cc_expirydate, cc_cvv, genres, password=None):
