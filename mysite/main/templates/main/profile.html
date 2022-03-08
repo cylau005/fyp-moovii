@@ -5,41 +5,56 @@ Profile
 {% endblock %}
 
 {% block content %}
-<h1>Profile</h1>
+<h2>Profile</h2>
 
-<form>
-    <div class="form-group">
-      <label for="exampleInputEmail1">Username</label>
-      <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="{{ user }}" disabled="true">
+  <form>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="inputEmail4">Username</label>
+        <input type="email" class="form-control" placeholder="{{ user }}" disabled="true">
+      </div>
+      <div class="form-group col-md-6">
+        <label for="inputEmail4">Name</label>
+        
+        <input type="text" class="form-control" placeholder="{{ user.first_name }} {{ user.last_name }}" disabled="true">
+      </div>
     </div>
     <div class="form-group">
-      <label for="exampleInputEmail1">Name</label>
-      <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="{{ user.first_name }} {{ user.last_name }}" disabled="true">
+      <label for="inputEmail4">Email Address</label>
+      <input type="text" class="form-control" id="inputEmail4" placeholder="{{ user.email }}" disabled="true">
     </div>
     <div class="form-group">
-        <label for="exampleInputEmail1">Email Address</label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="{{ user.email }}" disabled="true">
+      <label for="inputEmail4">Favourite Genre</label>
+      <input type="text" class="form-control" id="inputEmail4" placeholder="{{ user.account.genres }}" disabled="true">
     </div>
-    <div class="form-group">
-        <label for="exampleInputEmail1">Favourite Genre</label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="{{ user.account.genres }}" disabled="true">
+
+    <br /><br />
+
+<h2>Credit Card Detail</h2>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="inputEmail4">Credit Card Number</label>
+        <input type="text" class="form-control" placeholder="{{ user.creditcard.cc_number }}" disabled="true">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="inputEmail4">Name</label>
+        <input type="text" class="form-control" placeholder="{{ user.creditcard.cc_name }}" disabled="true">
+      </div>
+      <div class="form-group col-md-2">
+        <label for="inputZip">Expiry Date</label>
+        <input type="text" class="form-control" placeholder="{{ user.creditcard.cc_expirydate }}" disabled="true">
+      </div>
+      <div class="form-group col-md-2">
+        <label for="inputZip">CVV</label>
+        <input type="text" class="form-control" placeholder="***" disabled="true">
+      </div>
     </div>
-    <div class="form-group">
-        <label for="exampleInputEmail1">Credit Card Number</label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="{{  user.creditcard.cc_number }}" disabled="true">
-    </div>
-    <div class="form-group">
-        <label for="exampleInputEmail1">Credit Card Name</label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="{{  user.creditcard.cc_name }}" disabled="true">
-    </div>
-    <div class="form-group">
-        <label for="exampleInputEmail1">Credit Card Expiry Date</label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="{{  user.creditcard.cc_expirydate }}" disabled="true">
-    </div>
-    <div class="form-group">
-        <label for="exampleInputEmail1">Credit Card CVV</label>
-        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="***" disabled="true">
-        <!-- <input type="password" class="form-control" id="exampleInputPassword1" placeholder="{{  user.creditcard.cc_cvv }}" disabled="true"> -->
-    </div>
+
+    <br /><br />
+
+<h2>Reward Point and Prize</h2>
+
+
+
   </form>
 {% endblock %}
