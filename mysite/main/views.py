@@ -53,3 +53,7 @@ def create(response):
 
 def view(response):
     return render(response, "main/view.html", {})
+
+
+def profile(response):
+    return render(response, "main/profile.html", {})
