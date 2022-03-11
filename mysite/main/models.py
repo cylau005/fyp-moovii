@@ -35,3 +35,9 @@ class RatingList(models.Model):
     rating_score = models.IntegerField()
     movie_id = models.IntegerField()
     action = models.CharField(max_length=20)
+    
+  
+class PrizeList(models.Model):
+    item_id = models.IntegerField(primary_key=True)
+    item_name =  models.CharField(max_length=100)
+    require_point = models.IntegerField()
