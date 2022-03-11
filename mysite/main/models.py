@@ -17,7 +17,7 @@ from django.forms import IntegerField
 #     complete = models.BooleanField()
 
 #     def __str__(self):
-#         return self.text
+# #        return self.text
 
 class MovieList(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -41,3 +41,4 @@ class PrizeList(models.Model):
     item_id = models.IntegerField(primary_key=True)
     item_name =  models.CharField(max_length=100)
     require_point = models.IntegerField()
+
