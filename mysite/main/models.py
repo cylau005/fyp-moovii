@@ -21,8 +21,17 @@ from django.forms import IntegerField
 
 class MovieList(models.Model):
     id = models.IntegerField(primary_key=True)
-    movie_name =  models.CharField(max_length=100)
-    movie_name = models.CharField(max_length=100)
-    overall_rating = models.IntegerField()
-    date_release = models.DateField()
-    movie_image_url = models.CharField(max_length=255)
+    movie_name =  models.CharField(max_length=100, blank=True)
+    movie_genre = models.CharField(max_length=100, blank=True)
+    overall_rating = models.IntegerField(default=None, blank=True, null=True)
+    date_release = models.DateField(default=None, blank=True, null=True)
+    movie_image_url = models.CharField(max_length=255, default=None, blank=True, null=True)
+
+
+class RatingList(models.Model):
+    id = models.IntegerField(primary_key=True)
+    username =  models.CharField(max_length=100)
+    date_rating = models.DateField()
+    rating_score = models.IntegerField()
+    movie_id = models.IntegerField()
+    action = models.CharField(max_length=20)
