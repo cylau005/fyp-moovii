@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import MovieList
 from import_export.admin import ImportExportActionModelAdmin
-from .models import MovieList, RatingList
+from .models import MovieList, RatingList, PrizeList
 
 # Register your models here.
 # admin.site.register(ToDoList)
@@ -14,3 +14,5 @@ class MovieListAdmin(ImportExportActionModelAdmin):
 @admin.register(RatingList)
 class RatingListAdmin(ImportExportActionModelAdmin):
     list_display = ('id', 'username', 'date_rating', 'rating_score', 'movie_id', 'action')
+
+admin.site.register(PrizeList)
