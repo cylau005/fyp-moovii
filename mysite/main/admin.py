@@ -1,8 +1,7 @@
 from django.contrib import admin
-from .models import ToDoList, Item#, MyUser, MyUserManager
+from .models import MovieList
 
 # Register your models here.
-admin.site.register(ToDoList)
-admin.site.register(Item)
-# admin.site.register(MyUser)
-# admin.site.register(MyUserManager)
+# admin.site.register(ToDoList)
+# admin.site.register(Item)
+admin.site.register(MovieList)
