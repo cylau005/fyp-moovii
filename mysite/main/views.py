@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import MovieList, RatingList
-from .resources import MovieListResources, RatingListResources
+from .resources import MovieListResources, RatingListResources, PrizeListResources
 from django.contrib import messages
 from tablib import Dataset
 
@@ -131,3 +131,23 @@ def rating_upload(request):
             )
             value.save()
     return render(request, 'rating_upload.html')
+
+def prize_upload(request):
+    if request.method == 'POST':
+        prize_resource = PrizeListResources()
+        dataset = Dataset()
+        new_prize = request.FILES['myfile']
+
+        if not new_prize.name.endswith('xlsx'):
+            messages.info(request, 'Wrong Format')
+            return render(request, 'prize_upload.html')
+
+        imported_data = dataset.load(new_prizes.read(), format='xlsx')
+        for data in imported_data:
+            value = RatingList(
+                data[0],
+                data[1],
+                data[2]
+            )
+            value.save()
+    return render(request, 'prize_upload.html')

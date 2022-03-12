@@ -30,15 +30,15 @@ class MovieList(models.Model):
 
 class RatingList(models.Model):
     id = models.IntegerField(primary_key=True)
-    username =  models.CharField(max_length=100)
-    date_rating = models.DateField()
-    rating_score = models.IntegerField()
-    movie_id = models.IntegerField()
-    action = models.CharField(max_length=20)
+    user_id =  models.IntegerField(default=None, blank=True, null=True)
+    date_rating = models.DateField(default=None, blank=True, null=True)
+    rating_score = models.IntegerField(default=None, blank=True, null=True)
+    movie_id = models.IntegerField(default=None, blank=True, null=True)
+    action = models.CharField(max_length=20,default=None, blank=True, null=True)
     
   
 class PrizeList(models.Model):
     item_id = models.IntegerField(primary_key=True)
     item_name =  models.CharField(max_length=100)
-    require_point = models.IntegerField()
+    require_points = models.IntegerField()
 
