@@ -53,8 +53,29 @@ Profile
     <br /><br />
 
 <h2>Reward Point and Prize</h2>
-<p>point</p>
+<p>Point Available</p>
+{{data.thedata}}
 
+{% for td in user.ratinglist.all %}
+<p>{{td.rating_score}}</p>
+{% endfor %}
+
+<!-- <table border = "1">
+  <tr>
+    <th>UserID</th>
+    <th>Point</th>
+    <th>Date</th>
+  </tr>
+
+  {% for result in data %}
+  <tr>
+    <td>{{result.user_id}}</td>
+    <td>{{result.rating_score}}</td>
+    <td>{{result.date_rating}}</td>
+  </tr>
+  {% endfor %}
+
+</table> -->
 
   </form>
 {% endblock %}
