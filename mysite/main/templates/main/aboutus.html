@@ -1,0 +1,53 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+About Us
+{% endblock %}
+
+{% block content %}
+<h2>About Us</h2>
+<p>
+    Our product, MooVii, aims to create a user-friendly platform that offers convenience and enjoyment to personalize your movie recommendations.
+    We are monthly subscription based platform and being our registered viewer, you won't be disappoint since we will be providing only those movies you will be interested. 
+    Moreover, after watching a movie, you can do a rating of your opinion and share with others. Based on your preferences, our system will only provided quality recommendation. 
+    We also provide upcoming movies which will be showing on theatre based on your preference and so, you won't be wasting your previous time inside the theatre which you won't be enjoying much. 
+    If you're an movies lover looking for a right recommendation, you've come to the right place. 
+</p>
+
+<br/>
+<table class="contactTable">
+    <tr>
+        <th>Contact Information</th>
+    </tr>
+    <tr>
+        <td>Email: </td>
+        <td>moovii@support.com.sg</td>
+    </tr>
+    <tr>
+        <td>Instagram: </td>
+        <td>@moovii</td>
+    </tr>
+    <tr>
+        <td>Twitter: </td>
+        <td>@mooviiOfficial </td>
+    </tr>
+</table>
+<br/>
+
+<div>
+    <b>Feel free to drop us a message and we will get back to you ASAP</b>
+    <form id="contactForm" action="#">
+        <p>
+            <input type="text" name="Name" placeholder="Name*"><br/>
+        </p>		
+        <p>
+            <input type="text" name="Email" placeholder="Email Address*"><br/>
+        </p>
+        <p>
+            <textarea name="Message" spellcheck="false" placeholder="Feedback*"></textarea><br/>
+        </p>		
+        <input type="submit" class="customBtn" value="Send"><br/>				
+    </form>	
+</div>
+
+{% endblock %}

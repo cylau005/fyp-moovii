@@ -20,6 +20,9 @@ def profile(response):
     return render(response, "main/profile.html", {"data":data})
     #return render(response, "main/profile.html", {})
 
+def aboutus(response):
+    return render(response, "main/aboutus.html", {})
+
 def movie_upload(request):
     if request.method == 'POST':
         movie_resource = MovieListResources()
