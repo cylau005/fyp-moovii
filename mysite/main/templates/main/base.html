@@ -2,33 +2,83 @@
 <html>
     <head>
         <style type="text/css">
-            .sidenav {
-                height: 100%;
-                width: 160px;
-                position: fixed;
-                z-index: 1;
-                top: 0;
-                left: 0;
-                background-color: #111;
-                overflow-x: hidden;
-                padding-top: 20px;
+            .nav ul {
+                width:100%;
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: #333;
             }
 
-            .sidenav a {
-                padding: 6px 8px 6px 16px;
-                text-decoration: none;
-                font-size: 25px;
-                color: #818181;
+            .nav li {
+                float: left;
+            }
+
+            .nav li a {
                 display: block;
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
             }
 
-            .sidenav a:hover {
-                color: #f1f1f1;
+            .nav li a:hover {
+                background-color: #111;
             }
 
-            .main {
-                margin-left: 160px;
-                padding: 0px 10px;
+            .bg-image {
+                background-image: url(https://source.unsplash.com/Q7PclNhVRI0);
+                background-position: bottom;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-attachment: fixed;
+                height: 300vh;
+                width: 100%;
+            }
+
+            .bg-text {
+                color: Black;
+                font-weight: bold;
+                position: absolute;
+                top: 10%;
+                left: 5%;
+                width: 80%;
+                z-index: 2;
+            }
+
+            .footer {
+                position: fixed;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                border-top:3px solid #333;
+                color: #111;
+                text-align: center;
+            }
+
+            .footer .fa {
+                float: right; 
+                padding-top: 8px;
+                margin-right: 1%;
+                font-size: 25px;
+                width: 32px;
+                text-align: center;
+                text-decoration: none;
+                /* height:10px; */
+            }
+
+            .fa:hover {
+                opacity: 0.7;
+            }
+
+            .footer .fa-facebook {
+                background: #3B5998;
+                color: white;
+            }
+            .footer .fa-instagram {
+                background: #125688;
+                color: white;
             }
         </style>
 
@@ -36,39 +86,52 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         
 
         <title>{% block title %}MooVii{% endblock %}</title>
     </head>
     <body>
-        <div class="sidenav">
-            <a href="/home">Home</a>
-            <a href="/aboutus">About Us</a>
-            
-            {% if request.user.is_authenticated %}
-                <a href="/profile">Profile</a>
-                <a href="{% url 'logout' %}">Logout</a>
-             {% else %}
-                <a href="/register">Registration</a>
-                <a href="/login">Login</a>
-            {% endif %}
-            <!-- <a href="/login">Login</a> -->
+        <div class="nav">
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/aboutus">About Us</a></li>
+                
+                {% if request.user.is_authenticated %}
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="/register">Registration</a></li>
+                    <li><a href="/login">Login</a></li>
+                {% endif %}
+            </ul>
         </div>
 
-        <div id="content", name="content", class="main">
+
+        <div class="bg-image"></div>
+
+            <div class="bg-text">
+                <h1>MooVii</h1>
+                <hr class="mt-0 mb-4">
+                {% block content %}    
+                {% endblock %}
+        </div>
+        <!-- <div id="content", name="content", class="main">
             <div class="row justify-content-center">
                 <div class="col-8">
                     <h1 class="mt-2">MooVii</h1>
-                    <hr class="mt-0 mb-4">
+                    <hr class="mt-0 mb-4"> -->
 
                     
-                        {% block content %}    
-                        {% endblock %}
-                </div>
+                <!-- </div>
             </div>
-        </div>
+        </div> -->
 
+        <div class="footer">
+            Copyright © 2022 All rights reserved 
+            <a href="#" class="fa fa-facebook"></a>
+            <a href="#" class="fa fa-instagram"></a>
+        </div>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
