@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import MovieList, RatingList
+from .models import MovieList, RatingList, Reward_Point
 from .resources import MovieListResources, RatingListResources, RewardPointResources
 from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
 from django.views.generic.list import ListView
+from .forms import RatingForm
 
 # Create your views here.
 def home(response):
@@ -132,3 +133,29 @@ def reward_point_upload(request):
             )
             value.save()
     return render(request, 'reward_point_upload.html')
+
+def Rating(request):
+    if request.method == "POST":
+        form = RatingForm(request.POST)
+        if form.is_valid():
+            s = form.cleaned_data["rating_score"]
+            m = form.cleaned_data["movie_id"]
+            a = form.cleaned_data["action"]
+            user = request.user
+            if a == "Rate":
+                p = 2
+            else:
+                p = 3
+                s = None
+
+            t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
+            r = Reward_Point(user_id=user, point=p)
+            t.save()
+            r.save()
+
+        return HttpResponseRedirect("/home")
+        
+    else:
+        form = RatingForm()
+        rating_form = RatingList()
+    return render(request, "main/movie_detail.html", {"form":form})

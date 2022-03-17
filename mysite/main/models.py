@@ -32,7 +32,7 @@ class RatingList(models.Model):
     id = models.AutoField(primary_key=True)
     #user_id = models.IntegerField(default=None, blank=True, null=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_rating = models.DateField(default=None, blank=True, null=True)
+    date_rating = models.DateField(auto_now_add=True)
     rating_score = models.IntegerField(default=None, blank=True, null=True)
     movie_id = models.IntegerField(default=None, blank=True, null=True)
     action = models.CharField(
@@ -51,5 +51,5 @@ class PrizeList(models.Model):
 class Reward_Point(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     point = models.IntegerField(default=None, blank=True, null=True)
-    date_modified = models.DateField(default=None, blank=True, null=True)
+    date_modified = models.DateField(auto_now_add=True)
     redeem_item_id = models.ForeignKey(PrizeList, on_delete=models.CASCADE, default=None, blank=True, null=True)
