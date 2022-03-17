@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import MovieList, RatingList, PrizeList
+from .models import MovieList, RatingList, PrizeList, Reward_Point
 
 class MovieListResources(resources.ModelResource):
     class meta:
@@ -12,3 +12,7 @@ class RatingListResources(resources.ModelResource):
 class PrizeListResources(resources.ModelResource):
     class meta:
         model = PrizeList
+
+class RewardPointResources(resources.ModelResource):
+    class meta:
+        model = Reward_Point
