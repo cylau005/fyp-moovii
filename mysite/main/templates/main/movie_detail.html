@@ -25,7 +25,7 @@ Home
                   <p>
                     {% for movie in movielist %} 
                       {% if movie.id == 171763 %}                        
-                        {{movie.movie_name}}
+                        {{movie.movie_name|slice:":-6"}}
                       {% endif %}
                     {% endfor %}
                   </p>
@@ -53,7 +53,7 @@ Home
                   <p>
                     {% for movie in movielist %} 
                       {% if movie.id == 171763 %}
-                        {{movie.movie_genre}}
+                      {{movie.movie_name|slice:"-6:"}}
                       {% endif %}
                     {% endfor %}
                   </p>
