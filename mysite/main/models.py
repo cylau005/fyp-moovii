@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import IntegerField
+
 #from django.contrib.auth.models import AbstractUser, AbstractBaseUser, BaseUserManager
 
 # Create your models here.
@@ -26,7 +27,7 @@ class MovieList(models.Model):
     overall_rating = models.IntegerField(default=None, blank=True, null=True)
     date_release = models.DateField(default=None, blank=True, null=True)
     movie_image_url = models.CharField(max_length=255, default=None, blank=True, null=True)
-
+    
 
 class RatingList(models.Model):
     id = models.AutoField(primary_key=True)

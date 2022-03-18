@@ -158,4 +158,7 @@ def Rating(request):
     else:
         form = RatingForm()
         rating_form = RatingList()
-    return render(request, "main/movie_detail.html", {"form":form})
+    
+    movies = MovieList.objects.all()
+    return render(request, "main/movie_detail.html", {"form":form, "movielist": movies})
+
