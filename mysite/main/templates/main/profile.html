@@ -7,7 +7,6 @@ Profile
 {% block content %}
 <h2>Profile</h2>
 
-  <form>
     <div class="form-row">
       <div class="form-group col-md-6">
         <label for="inputEmail4">Username</label>
@@ -56,16 +55,37 @@ Profile
 <p>Point Available: {{data.thedata}}</p>
 
 
-<form action="#">
-  {% for td in prize %}
-  <div class="btn-group btn-group-toggle" data-toggle="buttons">
-    <label class="btn btn-secondary">
-    <input type="radio" name="{{td.item_name}}" value="{td.item_id}}" autocomplete="off">
-    <label for="{{td.item_id}}">{{td.item_name}}, Point Required: {{td.require_points}}</label><br>
-  </div>
-  {% endfor %}  
-<input type="submit"  class="btn btn-success"  value="Redeem">
-
+<form method="POST" class="form-group">
+  {% csrf_token %}
+  {{form.redeem_item_id}}
+<input type="submit" class="btn btn-success" value="Redeem">
 </form>
 
+<br />
+<p style="color:red;">{{msg}}</p>
+<br />
+<h2>Point History</h2>
+<div class="table-responsive">
+    <table class="table">
+      
+      <thead>
+        <tr>
+          <th scope="col">Username</th>
+          <th scope="col">Point</th>
+          <th scope="col">Date</th>
+          <th scope="col">Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for td in reward.all %}
+          <tr>
+            <td>{{td.user_id}}</td>
+            <td>{{td.point}}</td>
+            <td>{{td.date_modified}}</td>
+            <td>{{td.code}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}

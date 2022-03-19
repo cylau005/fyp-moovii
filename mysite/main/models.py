@@ -53,4 +53,5 @@ class Reward_Point(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     point = models.IntegerField(default=None, blank=True, null=True)
     date_modified = models.DateField(auto_now_add=True)
-    redeem_item_id = models.ForeignKey(PrizeList, on_delete=models.CASCADE, default=None, blank=True, null=True)
+    redeem_item_id = models.IntegerField(default=None, blank=True, null=True)
+    code = models.CharField(max_length=50,default=None, blank=True, null=True)

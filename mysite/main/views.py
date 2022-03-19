@@ -6,7 +6,9 @@ from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
 from django.views.generic.list import ListView
-from .forms import RatingForm
+from .forms import RatingForm, RedeemForm
+import string    
+import random 
 
 # Create your views here.
 def home(response):
@@ -19,7 +21,34 @@ def profile(response):
     user = response.user
     data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
     prize = PrizeList.objects.all()
-    return render(response, "main/profile.html", {"data":data, "prize":prize})
+    reward = Reward_Point.objects.filter(user_id=user).order_by('date_modified')
+
+    if response.method == "POST":
+        form = RedeemForm(response.POST)
+        if form.is_valid():
+            
+            point = data['thedata']
+            
+            if point >= 1:    
+                item = form.cleaned_data["redeem_item_id"]
+                point = 0-1
+                S = 30
+                ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
+                msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
+                r = Reward_Point(user_id=user, point=point, redeem_item_id=item, code = ran)
+                r.save()
+            
+            else:
+                msg = 'You do not have enough point'
+
+        
+        return render(response, "main/profile.html", {"data":data, "prize":prize, "form":form, "msg":msg, "reward":reward})
+        
+    else:
+        form = RedeemForm()
+        rating_form = Reward_Point()
+
+    return render(response, "main/profile.html", {"data":data, "prize":prize, "form":form, "reward":reward})
 
 def aboutus(response):
     return render(response, "main/aboutus.html", {})
@@ -161,4 +190,3 @@ def Rating(request):
     
     movies = MovieList.objects.all()
     return render(request, "main/movie_detail.html", {"form":form, "movielist": movies})
-
