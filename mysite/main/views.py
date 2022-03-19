@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import MovieList, RatingList, Reward_Point
+from .models import MovieList, RatingList, Reward_Point, PrizeList
 from .resources import MovieListResources, RatingListResources, RewardPointResources
 from django.contrib import messages
 from tablib import Dataset
@@ -16,10 +16,10 @@ def view(response):
     return render(response, "main/view.html", {})
 
 def profile(response):
-    data = RatingList.objects.all().aggregate(thedata=Sum('rating_score'))
-    #data = RatingList.objects.values('user_id').annotate(thedata=Sum('rating_score'))
-    return render(response, "main/profile.html", {"data":data})
-    #return render(response, "main/profile.html", {})
+    user = response.user
+    data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
+    prize = PrizeList.objects.all()
+    return render(response, "main/profile.html", {"data":data, "prize":prize})
 
 def aboutus(response):
     return render(response, "main/aboutus.html", {})

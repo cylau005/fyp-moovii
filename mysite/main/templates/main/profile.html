@@ -53,29 +53,19 @@ Profile
     <br /><br />
 
 <h2>Reward Point and Prize</h2>
-<p>Point Available</p>
-{{data.thedata}}
+<p>Point Available: {{data.thedata}}</p>
 
-<!-- {% for td in user.ratinglist.all %}
-<p>{{td.rating_score}}</p>
-{% endfor %} -->
 
-<!-- <table border = "1">
-  <tr>
-    <th>UserID</th>
-    <th>Point</th>
-    <th>Date</th>
-  </tr>
+<form action="#">
+  {% for td in prize %}
+  <div class="btn-group btn-group-toggle" data-toggle="buttons">
+    <label class="btn btn-secondary">
+    <input type="radio" name="{{td.item_name}}" value="{td.item_id}}" autocomplete="off">
+    <label for="{{td.item_id}}">{{td.item_name}}, Point Required: {{td.require_points}}</label><br>
+  </div>
+  {% endfor %}  
+<input type="submit"  class="btn btn-success"  value="Redeem">
 
-  {% for result in data %}
-  <tr>
-    <td>{{result.user_id}}</td>
-    <td>{{result.rating_score}}</td>
-    <td>{{result.date_rating}}</td>
-  </tr>
-  {% endfor %}
+</form>
 
-</table> -->
-
-  </form>
 {% endblock %}

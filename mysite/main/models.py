@@ -44,7 +44,7 @@ class RatingList(models.Model):
     
   
 class PrizeList(models.Model):
-    item_id = models.IntegerField(primary_key=True)
+    item_id = models.AutoField(primary_key=True)
     item_name =  models.CharField(max_length=100)
     require_points = models.IntegerField()
 
