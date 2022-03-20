@@ -170,6 +170,12 @@ EMAIL_USE_TLS=True
 EMAIL_HOST_USER='cylau005@gmail.com'
 EMAIL_HOST_PASSWORD='csit321!'
 
+# EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST='smtp-mail.outlook.com'
+# EMAIL_PORT='587'
+# EMAIL_USE_TLS=True
+# EMAIL_HOST_USER='cylau005@outlook.com'
+# EMAIL_HOST_PASSWORD='csit321!'
 
 if found:
     django_heroku.settings(locals())
