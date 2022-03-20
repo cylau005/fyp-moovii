@@ -2,11 +2,13 @@
 
 {% block title %}
 Home
-{% endblock %}
+{% endblock title %}
 {% block css %}
-
+  
 {% endblock css%}
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <div class="movie-detail">
   <form method="POST" class="form-group">
     <div class="row">
@@ -60,9 +62,20 @@ Home
               </div>
             </div>            
           </div>
-          
-          <!-- chee yang  -->
           <br/><br/>
+
+          <div class="p-rating">
+            <label for="rating">Your Rating:</label><br/>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star"></span>
+            <span class="fa fa-star"></span>         
+            
+            <input type="submit" class="btn btn-primary" value="Rate">
+            <input type="submit" class="btn btn-primary" value="Share">
+          </div>
+          <!-- chee yang           
           {% csrf_token %}
           <div class="form-row">
               <div class="form-group col-md-6">
@@ -81,7 +94,7 @@ Home
                 {{form.action}}
               </div>
           </div>
-          <button type="submit" class="btn btn-success">Submit</button>
+          <button type="submit" class="btn btn-success">Submit</button> -->
       </div>      
     </div>
   </form>

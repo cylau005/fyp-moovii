@@ -33,9 +33,9 @@ class RatingList(models.Model):
     id = models.AutoField(primary_key=True)
     #user_id = models.IntegerField(default=None, blank=True, null=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_rating = models.DateField(auto_now_add=True)
-    rating_score = models.IntegerField(default=None, blank=True, null=True)
     movie_id = models.IntegerField(default=None, blank=True, null=True)
+    date_rating = models.DateField(auto_now_add=True)
+    rating_score = models.IntegerField(default=None, blank=True, null=True)    
     action = models.CharField(
         max_length=20,
         choices=[('Rate','Rate'),
