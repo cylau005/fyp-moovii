@@ -103,7 +103,7 @@
                 {% if request.user.is_authenticated %}
                     <li><a href="/profile">Profile</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
-                    <li><a href="/movie_detail">MovieDetailPageForTest</a></li>
+                    <!-- <li><a href="/movie_detail">MovieDetailPageForTest</a></li> -->
                 {% else %}
                     <li><a href="/register">Registration</a></li>
                     <li><a href="/login">Login</a></li>
