@@ -34,7 +34,19 @@ def profile(response):
                 point = 0-1
                 S = 30
                 ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
-                msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
+                
+                if item == 1:
+                    ran = 'MV-'+ran
+                    msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
+
+                if item == 2:
+                    ran = 'FD-'+ran
+                    msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
+
+                if item == 3:
+                    ran = 'One month subscription'
+                    msg = 'We will extend your subscription for one month'
+                
                 r = Reward_Point(user_id=user, point=point, redeem_item_id=item, code = ran)
                 r.save()
             
