@@ -108,6 +108,11 @@
                     <li><a href="/register">Registration</a></li>
                     <li><a href="/login">Login</a></li>
                 {% endif %}
+
+                {% if request.user.is_staff %}
+                <li><a href="/movie_listing">Add Movie</a></li>
+                <li><a href="/rate_listing">Add Rating</a></li>
+                {% endif %}
             </ul>
         </div>
 

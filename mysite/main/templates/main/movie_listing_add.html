@@ -1,0 +1,46 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+View List
+{% endblock %}
+
+{% block content %}
+    <h1>Admin - Movie Listing Add</h1>
+    
+    <form method="post" class="form-group">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="movie_id">Movie ID</label>
+              {{form.id}}
+            </div>
+            <div class="form-group col-md-6">
+              <label for="movie_name">Movie Name</label>
+              {{form.movie_name}}
+            </div>
+            <div class="form-group col-md-6">
+              <label for="movie_genre">Movie Genre</label>
+              {{form.movie_genre}}
+            </div>
+            <div class="form-group col-md-6">
+              <label for="overall_rating">Overall Rating</label>
+              {{form.overall_rating}}
+            </div>
+            <div class="form-group col-md-6">
+                <label for="date_release">Date Released</label>
+                {{form.date_release}}
+              </div>
+            <div class="form-group col-md-6">
+                <label for="overall_rating">Movie Image Url</label>
+                {{form.movie_image_url}}
+            </div>
+        
+        
+        <button type="submit", name="save" class="btn btn-success">Add Movie</button>
+        <br />
+        <p style="color:red;">{{msg}}</p>
+        
+    </form>
+    </table>
+{% endblock %}
+

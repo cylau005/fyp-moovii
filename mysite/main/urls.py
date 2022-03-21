@@ -24,5 +24,11 @@ path('reset/<uidb64>/<token>/',
 auth_views.PasswordResetConfirmView.as_view(template_name="main/password_reset_form.html"), name="password_reset_confirm"),
 path('reset/done/', 
 auth_views.PasswordResetCompleteView.as_view(template_name="main/password_reset_done.html"), name="password_reset_complete"),
+
+path('movie_listing/', views.movieListing, name="movie_listing"),
+path('movie_listing_add/', views.movieListingAdd, name="movie_listing_add"),
+
+path('rate_listing/', views.rateListing, name="rate_listing"),
+path('rate_listing_add/', views.rateListingAdd, name="rate_listing_add"),
 ]
 

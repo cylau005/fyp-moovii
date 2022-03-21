@@ -6,7 +6,7 @@ from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
 from django.views.generic.list import ListView
-from .forms import RatingForm, RedeemForm
+from .forms import RatingForm, RedeemForm, AddMovieForm, AddRatingForm
 import string    
 import random 
 
@@ -202,3 +202,78 @@ def Rating(request):
     
     movies = MovieList.objects.all()
     return render(request, "main/movie_detail.html", {"form":form, "movielist": movies})
+
+
+def movieListing(request):
+    movies = MovieList.objects.all()
+    return render(request, "main/movie_listing.html", {"movielist": movies})
+
+
+def movieListingAdd(request):
+    if request.method == "POST":
+        form = AddMovieForm(request.POST)
+        if form.is_valid():
+            i = form.cleaned_data["id"]
+            n = form.cleaned_data["movie_name"]
+            g = form.cleaned_data["movie_genre"]
+            a = form.cleaned_data["overall_rating"]
+            d = form.cleaned_data["date_release"]
+            u = form.cleaned_data["movie_image_url"]
+            t = MovieList(id=i, movie_name=n, movie_genre=g, overall_rating=a, date_release=d, movie_image_url=u)
+            msg = "Movie added"
+            t.save()
+        
+        else:
+            msg = "Please check if you field in correctly"
+            
+        return render(request, "main/movie_listing_add.html", {"msg":msg})
+        
+    else:
+        form = AddMovieForm()
+        add_movie_form = MovieList()
+    
+    return render(request, "main/movie_listing_add.html", {"form":form})
+
+
+def rateListing(request):
+    ratings = RatingList.objects.all()
+    return render(request, "main/rate_listing.html", {"ratelist": ratings})
+
+
+def rateListingAdd(request):
+    if request.method == "POST":
+        form = AddRatingForm(request.POST)
+        if form.is_valid():
+            s = form.cleaned_data["rating_score"]
+            m = form.cleaned_data["movie_id"]
+            a = form.cleaned_data["action"]
+            u = request.user
+            
+            user = request.user
+            print(user)
+
+            if a == "Rate":
+                p = 2
+            else:
+                p = 3
+                s = None
+
+            t = RatingList(user_id=u, rating_score=s, movie_id=m, action=a)
+            r = Reward_Point(user_id=user, point=p)
+            t.save()
+            r.save()
+
+            msg = "Rating added"
+            print(msg)
+            t.save()
+        
+        else:
+            msg = "Please check if you field in correctly"
+            
+        return render(request, "main/rate_listing_add.html", {"msg":msg})
+        
+    else:
+        form = AddRatingForm()
+        add_movie_form = RatingList()
+    
+    return render(request, "main/rate_listing_add.html", {"form":form})

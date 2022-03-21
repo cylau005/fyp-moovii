@@ -1,0 +1,36 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+View List
+{% endblock %}
+
+{% block content %}
+    <h1>Admin - Rate Listing</h1>
+    
+    <br />
+    <a href="/rate_listing_add">Add Rating</a>
+    <br />
+    <table>
+        <tr>
+            <td>User ID</td>
+            <td>Movie ID</td>
+            <td>Date Rating</td>
+            <td>Rating Score</td>
+            <td>Action</td>
+        </tr>
+
+        {% for ratings in ratelist %}     
+            <tr>
+                <td>{{ratings.user_id}}</td>
+                <td>{{ratings.movie_name}}</td>
+                <td>{{ratings.date_rating}}</td>
+                <td>{{ratings.rating_score}}</td>
+                <td>{{ratings.action}}</td>
+
+            </tr>           
+        {% endfor %}
+        
+  
+    </table>
+{% endblock %}
+
