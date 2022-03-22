@@ -7,12 +7,24 @@ Home
 {% block content %}
 
 <h2>Upcoming Movies</h2><br/>
+<div class="search-container" class="form-group">
+    <form method="post" >
+        {% csrf_token %}       
+        {{form.movie_name}}
+        <button type="submit"><i class="fa fa-search"></i></button>
+        <p style="margin-left:5px;">{{msg}}</p>
+    </form>
+</div>
+<br/>
+
 <div class="movie-detail">
       <div class="row">
-
+        
         <div class="col-md-2">
             <div class="movie-img">
-                <img src="https://cdn.moviefone.com/admin-uploads/posters/morbius-movie-poster_1638710998.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+                <a href="/movie_detail">
+                    <img src="http://image.tmdb.org/t/p/w500//rmnQ9jKW72bHu8uKlMjPIb2VLMI.jpg" alt="" width="75%" height="75%"  />
+                </a>
             </div>
         </div>
 

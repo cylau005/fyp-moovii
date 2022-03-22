@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import MovieList, RatingList, Reward_Point, PrizeList
@@ -99,8 +100,27 @@ def reward_point_upload(request):
             value.save()
     return render(request, 'reward_point_upload.html')
 
-def home(response):
-    return render(response, "main/home.html", {})
+def home(request):
+    movies = MovieList.objects.all()
+
+    if request.method == "POST":
+        form = MovieSearchForm(request.POST)
+        if form.is_valid():
+            movies_search = form.cleaned_data["movie_name"]
+            movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search)
+            
+            if not movies_search_done:
+                msg = 'No movie found'
+                print(msg)
+            else:
+                movies = MovieList.objects.filter(movie_name__icontains=movies_search)
+                msg = 'Please refer below'        
+        return render(request, "main/home.html", {"movielist": movies,"form":form, "msg":msg})
+
+    else:
+        form = MovieSearchForm()
+        movielist_form = MovieList()
+    return render(request, "main/home.html", {"movielist": movies,"form":form})
 
 def view(response):
     return render(response, "main/view.html", {})
@@ -181,7 +201,7 @@ def Rating(request):
     return render(request, "main/movie_detail.html", {"form":form, "movielist": movies})
 
 
-def movieListing(request):
+def movieListing(request): 
     movies = MovieList.objects.all()
 
     if request.method == "POST":

@@ -27,13 +27,14 @@
                 background-color: #111;
             }
 
-            .search-container,
+            
             .nav ul span {
                 color: white;
                 text-align: center;
                 padding: 14px 16px;
                 text-decoration: none;
                 float: right;
+                font-size: 20px;
             }
 
             .bg-image {
@@ -112,24 +113,12 @@
                 {% if request.user.is_authenticated %}
                     <li><a href="/profile">Profile</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
-                    <!-- <li><a href="/movie_detail">MovieDetailPageForTest</a></li> -->
+                    <!-- <li><a href="/movie_detail">MovieDetailPageForTest</a></li> -->                    
                     
-                    <div class="search-container">
-                        <form action="#">
-                            <input type="text" placeholder="Search.." name="search">
-                            <button type="submit"><i class="fa fa-search"></i></button>
-                        </form>
-                    </div>
                     <span>Welcome <b>{{ user }}</b></span>
                 {% else %}
                     <li><a href="/register">Registration</a></li>
                     <li><a href="/login">Login</a></li>
-                    <div class="search-container">
-                        <form action="#">
-                            <input type="text" placeholder="Search.." name="search">
-                            <button type="submit"><i class="fa fa-search"></i></button>
-                        </form>
-                    </div>
                 {% endif %}
 
                 {% if request.user.is_staff %}
