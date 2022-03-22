@@ -6,7 +6,7 @@ from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
 from django.views.generic.list import ListView
-from .forms import RatingForm, RedeemForm, AddMovieForm, AddRatingForm, DeleteRatingForm, MovieSearchForm, UserSearchForm
+from .forms import RatingForm, AddMovieForm, AddRatingForm, DeleteRatingForm, MovieSearchForm, UserSearchForm
 import string    
 import random 
 from django.contrib.auth.models import User
@@ -113,45 +113,43 @@ def profile(response):
     data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
     prize = PrizeList.objects.all()
     reward = Reward_Point.objects.filter(user_id=user).order_by('date_modified')
+    prizeItem = PrizeList.objects.all()
 
-    if response.method == "POST":
-        form = RedeemForm(response.POST)
-        if form.is_valid():
+    if 'prize_chosen' in response.POST:
+        
+        item = response.POST['prize_chosen']
+        point = data['thedata']
+        
+        if point >= 1:    
+            point = 0-1
+            S = 30
+            ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
             
-            point = data['thedata']
-            
-            if point >= 1:    
-                item = form.cleaned_data["redeem_item_id"]
-                point = 0-1
-                S = 30
-                ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
+            if item == '1':
+                ran = 'MV-'+ran
+                msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
                 
-                if item == 1:
-                    ran = 'MV-'+ran
-                    msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
-
-                if item == 2:
-                    ran = 'FD-'+ran
-                    msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
-
-                if item == 3:
-                    ran = 'One month subscription'
-                    msg = 'We will extend your subscription for one month'
+            if item == '2':
+                ran = 'FD-'+ran
+                msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
                 
-                r = Reward_Point(user_id=user, point=point, redeem_item_id=item, code = ran)
-                r.save()
-            
-            else:
-                msg = 'You do not have enough point'
+            if item == '3':
+                ran = 'One month subscription'
+                msg = 'We will extend your subscription for one month'
+                
+            r = Reward_Point(user_id=user, point=point, redeem_item_id=item, code = ran)
+            r.save()
+        
+        else:
+            msg = 'You do not have enough point'
 
         
-        return render(response, "main/profile.html", {"data":data, "prize":prize, "form":form, "msg":msg, "reward":reward})
+        return render(response, "main/profile.html", {"data":data, "prize":prize, "prizeItem":prizeItem, "msg":msg, "reward":reward})
         
     else:
-        form = RedeemForm()
-        rating_form = Reward_Point()
+        error = "something wrong"
 
-    return render(response, "main/profile.html", {"data":data, "prize":prize, "form":form, "reward":reward})
+    return render(response, "main/profile.html", {"data":data, "prize":prize, "prizeItem":prizeItem, "reward":reward})
 
 
 def Rating(request):

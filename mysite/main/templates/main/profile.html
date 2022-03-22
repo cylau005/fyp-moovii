@@ -55,10 +55,16 @@ Profile
 <p>Point Available: {{data.thedata}}</p>
 
 
-<form method="POST" class="form-group">
+<form method="POST" class="form-group" action="">
   {% csrf_token %}
-  {{form.redeem_item_id}}
-<input type="submit" class="btn btn-success" value="Redeem">
+
+  <select name="prize_chosen" action="">
+    <option selected disabled="true">-- Select Prize--</option>
+      {% for prizei in prizeItem %}
+        <option value="{{ prizei.item_id }}" >{{prizei.item_name}}</option>
+      {% endfor %}
+  </select>
+  <input type="submit" class="btn btn-success" value="Redeem">
 </form>
 
 <br />
