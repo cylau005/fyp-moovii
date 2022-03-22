@@ -1,0 +1,57 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+View List
+{% endblock %}
+
+{% block content %}
+    {% if request.user.is_staff %}
+        <h1>Admin - Movie Listing</h1>
+        
+        <br />
+        <a href="/user_listing">Reset Page</a> | 
+        <a href="/user_blacklist">Blacklist User</a>
+
+        <form method="post" class="form-group" style="float:right;">
+            {% csrf_token %}
+            <div class="form-group col-md-1">
+                {{form.username}}
+            </div>            
+            <button type="submit" name="save" class="btn btn-success" style="height:35px; margin-left:15px;">Search User</button>
+            
+            <!-- <p style="color:red; margin-left:15px;">{{msg}}</p> -->
+        </form>
+        
+
+
+    <table class="table table-bordered">
+        <tr>
+            <td>ID</td>
+            <td>Username</td>
+            <td>Email Address</td>
+            <td>Active/Non-Blacklist</td>
+            <td>First Name</td>
+            <td>Last Name</td>
+            <td>Favourite Genre</td>
+        </tr>
+
+        {% for user in userlist %}     
+            <tr>
+                <th>{{user.id}}</th>
+                <td>{{user.username}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.is_active}}</td>
+                <td>{{user.first_name}}</td>
+                <td>{{user.last_name}}</td>
+                <td>{{user.account.genres}}</td>
+
+            </tr>           
+        {% endfor %}
+        
+    </table>
+    </div>
+    {% else %}
+        <p>You required Admin Access</p>
+  {% endif %}
+{% endblock %}
+

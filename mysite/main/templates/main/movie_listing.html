@@ -9,32 +9,40 @@ View List
         <h1>Admin - Movie Listing</h1>
         
         <br />
-        <a href="/movie_listing_add">Add Movie</a>
-        <br />
-        <table>
-            <tr>
-                <td>ID</td>
-                <td>Movie Name</td>
-                <td>Movie Genre</td>
-                <td>Movie Rating</td>
-                <td>Movie Date Release</td>
-                <!-- <td>Movie Image</td> -->
-            </tr>
-
-            {% for movie in movielist %}     
-                <tr>
-                    <td>{{movie.id}}</td>
-                    <td>{{movie.movie_name}}</td>
-                    <td>{{movie.movie_genre}}</td>
-                    <td>{{movie.overall_rating}}</td>
-                    <td>{{movie.date_release}}</td>
-                    <!-- <td>{{movie.movie_image_url}}</td> -->
-
-                </tr>           
-            {% endfor %}
+        <a href="/movie_listing_add">Add Movie</a> |
+        <a href="/movie_listing">Reset Page</a>
+        <form method="post" class="form-group" style="float:right;">
+            {% csrf_token %}
+            <div class="form-group col-md-1">
+                {{form.movie_name}}
+            </div>            
+            <button type="submit" name="save" class="btn btn-success" style="height:35px; margin-left:15px;">Search Movie</button>
             
-    
-        </table>
+            <p style="color:red; margin-left:15px;">{{msg}}</p>
+        </form>
+        
+
+    <table class="table table-bordered">
+        <tr>
+            <td>ID</td>
+            <td>Movie Name</td>
+            <td>Movie Genre</td>
+            <td>Movie Rating</td>
+            <td>Movie Date Release</td>
+        </tr>
+
+        {% for movie in movielist %}     
+            <tr>
+                <td>{{movie.id}}</td>
+                <td>{{movie.movie_name}}</td>
+                <td>{{movie.movie_genre}}</td>
+                <td>{{movie.overall_rating}}</td>
+                <td>{{movie.date_release}}</td>
+
+            </tr>           
+        {% endfor %}
+        
+    </table>
     {% else %}
         <p>You required Admin Access</p>
   {% endif %}

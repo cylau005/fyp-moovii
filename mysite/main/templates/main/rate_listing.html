@@ -9,35 +9,35 @@ View List
         <h1>Admin - Rate Listing</h1>
         
         <br />
-        <a href="/rate_listing_add">Add Rating</a>
+        <a href="/rate_listing_add">Add Rating</a> | 
         <a href="/rate_listing_delete">Delete Rating</a>
         <br />
         
-        <div class="table-responsive">
-            <table>
+        
+    <table class="table table-bordered">
+            <tr>
+                <td>Rating ID</td>
+                <td>User ID</td>
+                <td>Movie ID</td>
+                <td>Date Rating</td>
+                <td>Rating Score</td>
+                <td>Action</td>
+            </tr>
+
+            {% for ratings in ratelist %}     
                 <tr>
-                    <td>Rating ID</td>
-                    <td>User ID</td>
-                    <td>Movie ID</td>
-                    <td>Date Rating</td>
-                    <td>Rating Score</td>
-                    <td>Action</td>
-                </tr>
+                    <td>{{ratings.id}}</td>
+                    <td>{{ratings.user_id}}</td>
+                    <td>{{ratings.movie_id}}</td>
+                    <td>{{ratings.date_rating}}</td>
+                    <td>{{ratings.rating_score}}</td>
+                    <td>{{ratings.action}}</td>
 
-                {% for ratings in ratelist %}     
-                    <tr>
-                        <td>{{ratings.id}}</td>
-                        <td>{{ratings.user_id}}</td>
-                        <td>{{ratings.movie_id}}</td>
-                        <td>{{ratings.date_rating}}</td>
-                        <td>{{ratings.rating_score}}</td>
-                        <td>{{ratings.action}}</td>
-
-                    </tr>           
-                {% endfor %}
-                
-            </table>
-        </div>
+                </tr>           
+            {% endfor %}
+            
+        </table>
+        
     {% else %}
         <p>You required Admin Access</p>
     {% endif %}

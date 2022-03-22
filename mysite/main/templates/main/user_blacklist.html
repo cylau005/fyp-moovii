@@ -1,0 +1,30 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+View List
+{% endblock %}
+
+{% block content %}
+    {% if request.user.is_staff %}
+        <h1>Admin - Blacklist User</h1>
+        <br />
+        <form method="post" class="form-group">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="user_id">Please key in username for blacklist: </label>
+                    {{form.username}}
+                </div>
+            
+            
+            <button type="submit", name="save" class="btn btn-success">Blacklist</button>
+            <br />
+            <p style="color:red;">{{msg}}</p>
+            
+        </form>
+        
+    {% else %}
+        <p>You required Admin Access</p>
+  {% endif %}
+{% endblock %}
+

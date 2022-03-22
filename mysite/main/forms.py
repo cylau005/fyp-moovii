@@ -74,3 +74,17 @@ class DeleteRatingForm(forms.Form):
     class Meta:
         model = RatingList
         fields = ["id"]
+
+class MovieSearchForm(forms.Form):
+    movie_name = forms.CharField(label='movie_name')
+
+    class Meta:
+        model = MovieList
+        fields = ["movie_name"]
+
+class UserSearchForm(forms.Form):
+    username = forms.CharField(label='username')
+
+    class Meta:
+        model = User
+        fields = ["username"]

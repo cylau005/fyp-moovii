@@ -6,89 +6,12 @@ from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
 from django.views.generic.list import ListView
-from .forms import RatingForm, RedeemForm, AddMovieForm, AddRatingForm, DeleteRatingForm
+from .forms import RatingForm, RedeemForm, AddMovieForm, AddRatingForm, DeleteRatingForm, MovieSearchForm, UserSearchForm
 import string    
 import random 
 from django.contrib.auth.models import User
 
 # Create your views here.
-def home(response):
-    return render(response, "main/home.html", {})
-
-def view(response):
-    return render(response, "main/view.html", {})
-
-def profile(response):
-    user = response.user
-    data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
-    prize = PrizeList.objects.all()
-    reward = Reward_Point.objects.filter(user_id=user).order_by('date_modified')
-
-    if response.method == "POST":
-        form = RedeemForm(response.POST)
-        if form.is_valid():
-            
-            point = data['thedata']
-            
-            if point >= 1:    
-                item = form.cleaned_data["redeem_item_id"]
-                point = 0-1
-                S = 30
-                ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
-                
-                if item == 1:
-                    ran = 'MV-'+ran
-                    msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
-
-                if item == 2:
-                    ran = 'FD-'+ran
-                    msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
-
-                if item == 3:
-                    ran = 'One month subscription'
-                    msg = 'We will extend your subscription for one month'
-                
-                r = Reward_Point(user_id=user, point=point, redeem_item_id=item, code = ran)
-                r.save()
-            
-            else:
-                msg = 'You do not have enough point'
-
-        
-        return render(response, "main/profile.html", {"data":data, "prize":prize, "form":form, "msg":msg, "reward":reward})
-        
-    else:
-        form = RedeemForm()
-        rating_form = Reward_Point()
-
-    return render(response, "main/profile.html", {"data":data, "prize":prize, "form":form, "reward":reward})
-
-def aboutus(response):
-    return render(response, "main/aboutus.html", {})
-
-def movie_upload(request):
-    if request.method == 'POST':
-        movie_resource = MovieListResources()
-        dataset = Dataset()
-        new_movie = request.FILES['myfile']
-
-        if not new_movie.name.endswith('xlsx'):
-            messages.info(request, 'Wrong Format')
-            return render(request, 'upload.html')
-
-        imported_data = dataset.load(new_movie.read(), format='xlsx')
-        for data in imported_data:
-            value = MovieList(
-                data[0],
-                data[1],
-                data[2],
-                data[3],
-                data[4],
-                data[5]
-            )
-            value.save()
-    return render(request, 'upload.html')
-
 def movie_upload(request):
     if request.method == 'POST':
         movie_resource = MovieListResources()
@@ -176,6 +99,61 @@ def reward_point_upload(request):
             value.save()
     return render(request, 'reward_point_upload.html')
 
+def home(response):
+    return render(response, "main/home.html", {})
+
+def view(response):
+    return render(response, "main/view.html", {})
+
+def aboutus(response):
+    return render(response, "main/aboutus.html", {})
+
+def profile(response):
+    user = response.user
+    data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
+    prize = PrizeList.objects.all()
+    reward = Reward_Point.objects.filter(user_id=user).order_by('date_modified')
+
+    if response.method == "POST":
+        form = RedeemForm(response.POST)
+        if form.is_valid():
+            
+            point = data['thedata']
+            
+            if point >= 1:    
+                item = form.cleaned_data["redeem_item_id"]
+                point = 0-1
+                S = 30
+                ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
+                
+                if item == 1:
+                    ran = 'MV-'+ran
+                    msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
+
+                if item == 2:
+                    ran = 'FD-'+ran
+                    msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
+
+                if item == 3:
+                    ran = 'One month subscription'
+                    msg = 'We will extend your subscription for one month'
+                
+                r = Reward_Point(user_id=user, point=point, redeem_item_id=item, code = ran)
+                r.save()
+            
+            else:
+                msg = 'You do not have enough point'
+
+        
+        return render(response, "main/profile.html", {"data":data, "prize":prize, "form":form, "msg":msg, "reward":reward})
+        
+    else:
+        form = RedeemForm()
+        rating_form = Reward_Point()
+
+    return render(response, "main/profile.html", {"data":data, "prize":prize, "form":form, "reward":reward})
+
+
 def Rating(request):
     if request.method == "POST":
         form = RatingForm(request.POST)
@@ -207,7 +185,28 @@ def Rating(request):
 
 def movieListing(request):
     movies = MovieList.objects.all()
-    return render(request, "main/movie_listing.html", {"movielist": movies})
+
+    if request.method == "POST":
+        form = MovieSearchForm(request.POST)
+        if form.is_valid():
+            movies_search = form.cleaned_data["movie_name"]
+            movies_search_done = MovieList.objects.filter(movie_name__contains=movies_search)
+            
+            if not movies_search_done:
+                msg = 'No movie found'
+                print(msg)
+            else:
+                movies = MovieList.objects.filter(movie_name__contains=movies_search)
+                msg = 'Please refer below'
+        
+        return render(request, "main/movie_listing.html", {"movielist": movies,"form":form, "msg":msg})
+
+    else:
+        form = MovieSearchForm()
+        movielist_form = MovieList()
+
+        
+    return render(request, "main/movie_listing.html", {"movielist": movies,"form":form})
 
 
 def movieListingAdd(request):
@@ -301,12 +300,10 @@ def rateListingDelete(request):
             
             if not rating_check:
                 msg = 'Rating not exists'
-                print(msg)
 
             else:
                 RatingList.objects.filter(id=s).delete()
                 msg = "Rating deleted"
-                print(msg)
             
         else:
             msg = "Please check if you field in correctly"
@@ -318,3 +315,52 @@ def rateListingDelete(request):
         delete_movie_form = RatingList()
     
     return render(request, "main/rate_listing_delete.html", {"form":form})
+
+def userListing(request):
+    users = User.objects.all()
+    if request.method == "POST":
+        form = UserSearchForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            username_search_done = User.objects.filter(username__contains=username)
+            
+            if not username_search_done:
+                msg = 'No user found'
+                print(msg)
+            else:
+                users = User.objects.filter(username__contains=username)
+                msg = 'Please refer below'
+        
+        return render(request, "main/user_listing.html", {"userlist": users,"form":form, "msg":msg})
+
+    else:
+        form = UserSearchForm()
+        user_form = User()
+
+    return render(request, "main/user_listing.html", {"userlist": users, "form":form})
+
+def userBlacklist(request):
+    if request.method == "POST":
+        form = UserSearchForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            username_search_done = User.objects.filter(username=username)
+            
+            if not username_search_done:
+                msg = 'No user found'
+                print(msg)
+            else:
+                users = User.objects.get(username=username)
+                print(users)
+                users.is_active = False
+                users.save()
+                msg = 'User blacklisted'
+        
+        return render(request, "main/user_blacklist.html", {"form":form, "msg":msg})
+
+    else:
+        form = UserSearchForm()
+        user_form = User()
+
+    return render(request, "main/user_blacklist.html", {"form":form})
+
