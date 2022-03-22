@@ -6,9 +6,10 @@ from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
 from django.views.generic.list import ListView
-from .forms import RatingForm, RedeemForm, AddMovieForm, AddRatingForm
+from .forms import RatingForm, RedeemForm, AddMovieForm, AddRatingForm, DeleteRatingForm
 import string    
 import random 
+from django.contrib.auth.models import User
 
 # Create your views here.
 def home(response):
@@ -219,9 +220,16 @@ def movieListingAdd(request):
             a = form.cleaned_data["overall_rating"]
             d = form.cleaned_data["date_release"]
             u = form.cleaned_data["movie_image_url"]
-            t = MovieList(id=i, movie_name=n, movie_genre=g, overall_rating=a, date_release=d, movie_image_url=u)
-            msg = "Movie added"
-            t.save()
+
+            movie_check = MovieList.objects.filter(id=i)
+            print(movie_check)
+            if not movie_check:
+                t = MovieList(id=i, movie_name=n, movie_genre=g, overall_rating=a, date_release=d, movie_image_url=u)
+                msg = "Movie added"
+                t.save()
+            else:
+                msg = "ID exists. Please try with other ID"
+                
         
         else:
             msg = "Please check if you field in correctly"
@@ -247,33 +255,66 @@ def rateListingAdd(request):
             s = form.cleaned_data["rating_score"]
             m = form.cleaned_data["movie_id"]
             a = form.cleaned_data["action"]
-            u = request.user
-            
-            user = request.user
-            print(user)
+            u = form.cleaned_data["user_id"]
+            user_check = User.objects.filter(username=u)
+            print(user_check)
 
             if a == "Rate":
                 p = 2
             else:
                 p = 3
                 s = None
+            
+            if not user_check:
+                msg = 'User not exists'
+                print(msg)
 
-            t = RatingList(user_id=u, rating_score=s, movie_id=m, action=a)
-            r = Reward_Point(user_id=user, point=p)
-            t.save()
-            r.save()
+            else:
+                user = User.objects.get(username=u)
+                t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
+                r = Reward_Point(user_id=user, point=p)
+                t.save()
+                r.save()
 
-            msg = "Rating added"
-            print(msg)
-            t.save()
-        
+                msg = "Rating added"
+                print(msg)
+            
         else:
             msg = "Please check if you field in correctly"
             
-        return render(request, "main/rate_listing_add.html", {"msg":msg})
+        return render(request, "main/rate_listing_add.html", {"form":form,"msg":msg})
         
     else:
         form = AddRatingForm()
         add_movie_form = RatingList()
     
     return render(request, "main/rate_listing_add.html", {"form":form})
+
+
+def rateListingDelete(request):
+    if request.method == "POST":
+        form = DeleteRatingForm(request.POST)
+        if form.is_valid():
+            s = form.cleaned_data["id"]
+            print(s)
+            rating_check = RatingList.objects.filter(id=s)
+            
+            if not rating_check:
+                msg = 'Rating not exists'
+                print(msg)
+
+            else:
+                RatingList.objects.filter(id=s).delete()
+                msg = "Rating deleted"
+                print(msg)
+            
+        else:
+            msg = "Please check if you field in correctly"
+            
+        return render(request, "main/rate_listing_delete.html", {"form":form,"msg":msg})
+        
+    else:
+        form = DeleteRatingForm()
+        delete_movie_form = RatingList()
+    
+    return render(request, "main/rate_listing_delete.html", {"form":form})

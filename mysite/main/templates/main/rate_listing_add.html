@@ -5,6 +5,7 @@ View List
 {% endblock %}
 
 {% block content %}
+  {% if request.user.is_staff %}
     <h1>Admin - Rate Listing Add</h1>
     
     <form method="post" class="form-group">
@@ -34,5 +35,8 @@ View List
         
     </form>
     </table>
+  {% else %}
+    <p>You required Admin Access</p>
+  {% endif %}
 {% endblock %}
 

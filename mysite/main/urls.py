@@ -30,5 +30,6 @@ path('movie_listing_add/', views.movieListingAdd, name="movie_listing_add"),
 
 path('rate_listing/', views.rateListing, name="rate_listing"),
 path('rate_listing_add/', views.rateListingAdd, name="rate_listing_add"),
+path('rate_listing_delete/', views.rateListingDelete, name="rate_listing_delete"),
 ]
 
