@@ -188,13 +188,13 @@ def movieListing(request):
         form = MovieSearchForm(request.POST)
         if form.is_valid():
             movies_search = form.cleaned_data["movie_name"]
-            movies_search_done = MovieList.objects.filter(movie_name__contains=movies_search)
+            movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search)
             
             if not movies_search_done:
                 msg = 'No movie found'
                 print(msg)
             else:
-                movies = MovieList.objects.filter(movie_name__contains=movies_search)
+                movies = MovieList.objects.filter(movie_name__icontains=movies_search)
                 msg = 'Please refer below'
         
         return render(request, "main/movie_listing.html", {"movielist": movies,"form":form, "msg":msg})
@@ -320,13 +320,13 @@ def userListing(request):
         form = UserSearchForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data["username"]
-            username_search_done = User.objects.filter(username__contains=username)
+            username_search_done = User.objects.filter(username__icontains=username)
             
             if not username_search_done:
                 msg = 'No user found'
                 print(msg)
             else:
-                users = User.objects.filter(username__contains=username)
+                users = User.objects.filter(username__icontains=username)
                 msg = 'Please refer below'
         
         return render(request, "main/user_listing.html", {"userlist": users,"form":form, "msg":msg})
