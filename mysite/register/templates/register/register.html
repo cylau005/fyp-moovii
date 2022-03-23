@@ -6,6 +6,8 @@ Create An Account
 {% load crispy_forms_tags %}
 
 {% block content %}
+
+
     <form method="POST" class="form-group">
         {% csrf_token %}
         <!-- {{form|crispy}} -->
@@ -14,10 +16,12 @@ Create An Account
             <div class="form-group col-md-6">
               <label for="username">Username</label>
               {{form.username}}
+              <!-- <input type="text" class="form-control" name="username"> -->
             </div>
             <div class="form-group col-md-6">
               <label for="email">Email Address</label>
               {{form.email}}
+              <!-- <input type="text" class="form-control" name="email"> -->
             </div>
         </div>
 
@@ -25,10 +29,12 @@ Create An Account
             <div class="form-group col-md-6">
               <label for="password1">Password</label>
               {{form.password1}}
+              <!-- <input type="password" class="form-control" name="password1"> -->
             </div>
             <div class="form-group col-md-6">
               <label for="password2">Confirm Password</label>
               {{form.password2}}
+              <!-- <input type="password" class="form-control" name="password2"> -->
             </div>
         </div>
 
@@ -37,16 +43,22 @@ Create An Account
             <div class="form-group col-md-6">
               <label for="first_name">First Name</label>
               {{form.first_name}}
+              <!-- <input type="text" class="form-control" name="first_name"> -->
             </div>
             <div class="form-group col-md-6">
               <label for="last_name">Last Name</label>
               {{form.last_name}}
+              <!-- <input type="text" class="form-control" name="last_name"> -->
             </div>
         </div>
 
         <div class="form-group">
             <label for="genres">Favourite Genres</label>
-            {{form.genres}}
+            <select name="genres_chosen" class="form-control" action="">
+              {% for genres in split_genre%}
+                 <option value="{{genres}}" >{{genres}}</option>
+               {% endfor %}
+           </select>
         </div>
       
           <br /><br />
@@ -56,20 +68,26 @@ Create An Account
             <div class="form-group col-md-4">
               <label for="cc_number">Credit Card Number</label>
               {{form.cc_number}}
+              <!-- <input type="text" class="form-control" name="cc_number"> -->
             </div>
             <div class="form-group col-md-4">
               <label for="cc_name">Name</label>
               {{form.cc_name}}
+              <!-- <input type="text" class="form-control" name="cc_name"> -->
             </div>
             <div class="form-group col-md-2">
               <label for="cc_expirydate">Expiry Date(MMYY)</label>
               {{form.cc_expirydate}}
+              <!-- <input type="text" class="form-control" name="cc_expirydate"> -->
             </div>
             <div class="form-group col-md-2">
               <label for="cc_cvv">CVV</label>
               {{form.cc_cvv}}
+              <!-- <input type="text" class="form-control" name="cc_cvv"> -->
             </div>
           </div>
         <button type="submit" class="btn btn-success">Register</button>
     </form>
+
+
 {% endblock %}
