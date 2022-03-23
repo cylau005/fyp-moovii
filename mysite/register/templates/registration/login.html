@@ -7,6 +7,9 @@ Login Here
 {% load crispy_forms_tags %}
 
 {% block content %}
+
+{{msg}}
+<br />
     <form method="post" class="from-group">
         {% csrf_token %}
         {{form|crispy}}
