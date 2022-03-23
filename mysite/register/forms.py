@@ -25,6 +25,7 @@ from django.contrib.auth.models import User
 # ]
 
 class RegisterForm(UserCreationForm):
+    username = forms.CharField()
     email = forms.EmailField()
     # genres = forms.CharField(label='What is your favorite genres?', 
     #         widget=forms.Select(choices=GENRES_CHOICES))
