@@ -6,7 +6,6 @@ Home
 
 {% block content %}
 
-<h2>Upcoming Movies</h2><br/>
 <div class="search-container" class="form-group">
     <form method="post" >
         {% csrf_token %}       
@@ -17,84 +16,117 @@ Home
 </div>
 <br/>
 
-<div class="movie-detail">
-      <div class="row">
-        
-        <div class="col-md-2">
-            <div class="movie-img">
-                <a href="/movie_detail">
-                    <img src="http://image.tmdb.org/t/p/w500//rmnQ9jKW72bHu8uKlMjPIb2VLMI.jpg" alt="" width="75%" height="75%"  />
-                </a>
-            </div>
+{% if request.user.is_authenticated %}
+<h2>Upcoming Movies</h2><br/>
+<div class="row">
+    <div class="col-md-2">
+        <div class="movie-img">
+            <a href="/movie_detail">
+                <img src="https://cdn.moviefone.com/admin-uploads/posters/morbius-movie-poster_1638710998.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            </a>
+            <p>Morbius</p>
         </div>
+    </div>
 
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="https://cdn.moviefone.com/admin-uploads/posters/sonic2-movie-poster_1638995220.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
-            </div>
+    <div class="col-md-2">
+        <div class="movie-img">
+            <img src="https://cdn.moviefone.com/admin-uploads/posters/sonic2-movie-poster_1638995220.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            <p>Sonic The Hedgehog 2</p>
         </div>
+    </div>
 
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="https://cdn.moviefone.com/admin-uploads/posters/thesecretsofdumbledoreposter_1646063833.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
-            </div>
+    <div class="col-md-2">
+        <div class="movie-img">
+            <img src="https://cdn.moviefone.com/admin-uploads/posters/thesecretsofdumbledoreposter_1646063833.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            <p>Fantastic Beast: The Secrets of Dumbledore</p>
         </div>
+    </div>
 
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="https://cdn.moviefone.com/admin-uploads/posters/thelostcityposter_1644600130.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
-            </div>
+    <div class="col-md-2">
+        <div class="movie-img">
+            <img src="https://cdn.moviefone.com/admin-uploads/posters/thelostcityposter_1644600130.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            <p>The Lost City</p>
         </div>
+    </div>
 
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="https://cdn.moviefone.com/image-assets/438148/wKiOkZTN9lUUUNZLmtnwubZYONg.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
-            </div>
+    <div class="col-md-2">
+        <div class="movie-img">
+            <img src="https://cdn.moviefone.com/image-assets/438148/wKiOkZTN9lUUUNZLmtnwubZYONg.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            <p>Minions: The Rise of Gru</p>
         </div>
-
-      </div>
+    </div>
 </div>
-
-&nbsp;
-&nbsp;
-&nbsp;
-&nbsp;
 
 <h2>Recommended for You</h2>
 <div class="movie-detail">
-      <div class="row">
-
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="http://image.tmdb.org/t/p/w500//mYDKm9HxImm8PRru3KbkHAe1cmk.jpg" alt="" width="75%" height="75%"  />
-            </div>
-        </div>
-
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="http://image.tmdb.org/t/p/w500//yk4J4aewWYNiBhD49WD7UaBBn37.jpg" alt="" width="75%" height="75%"  />
-            </div>
-        </div>
-
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="http://image.tmdb.org/t/p/w500//eWdyYQreja6JGCzqHWXpWHDrrPo.jpg" alt="" width="75%" height="75%"  />
-            </div>
-        </div>
-
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="http://image.tmdb.org/t/p/w500//850chzYHYbT3IISl6Q7dbBuFP2B.jpg" alt="" width="75%" height="75%"  />
-            </div>
-        </div>
-
-        <div class="col-md-2">
-            <div class="movie-img">
-                <img src="http://image.tmdb.org/t/p/w500//jAWBQBsUK6lIrdl8YGIxZk2ffgp.jpg" alt="" width="75%" height="75%"  />
-            </div>
-        </div>
-
+    <div class="row">
+        {% for movie in movielist %}
+            {% if 'Animation' in movie.movie_genre and movie.overall_rating == 5 %}
+                <div class="col-md-2">
+                    <div class="movie-img">
+                        <img src={{movie.movie_image_url}} alt="" width="75%" height="75%"  />
+                        <p>{{movie.movie_name}}</p>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
       </div>
+</div>
+{% else %}
+<h2>Popular Movies</h2><br/>
+<div class="movie-detail">
+    <div class="row">
+      {% for movie in movielist %}
+        {% if movie.overall_rating == 5 %}
+              <div class="col-md-2">
+                  <div class="movie-img">
+                    <a href="/movie_detail">
+                      <img src={{movie.movie_image_url}} alt="" width="75%" height="75%"  />
+                    </a>
+                      <p>{{movie.movie_name}}</p>
+                  </div>
+              </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+</div>
+
+{% endif %}
+
+<h2>Action</h2><br/>
+<div class="movie-detail">
+    <div class="row">
+      {% for movie in movielist %}
+          {% if 'Action' in movie.movie_genre and movie.overall_rating == 5 %}
+              <div class="col-md-2">
+                  <div class="movie-img">
+                    <a href="/movie_detail">
+                      <img src={{movie.movie_image_url}} alt="" width="75%" height="75%"  />
+                    </a>
+                      <p>{{movie.movie_name}}</p>
+                  </div>
+              </div>
+          {% endif %}
+      {% endfor %}
+    </div>
+</div>
+
+<h2>Comedy</h2><br/>
+<div class="movie-detail">
+    <div class="row">
+      {% for movie in movielist %}
+          {% if 'Comedy' in movie.movie_genre and movie.overall_rating == 5 %}
+              <div class="col-md-2">
+                  <div class="movie-img">
+                    <a href="/movie_detail">
+                      <img src={{movie.movie_image_url}} alt="" width="75%" height="75%"  />
+                    </a>
+                      <p>{{movie.movie_name}}</p>
+                  </div>
+              </div>
+          {% endif %}
+      {% endfor %}
+    </div>
 </div>
 
 {% endblock %}
