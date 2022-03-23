@@ -27,6 +27,7 @@ auth_views.PasswordResetCompleteView.as_view(template_name="main/password_reset_
 
 path('movie_listing/', views.movieListing, name="movie_listing"),
 path('movie_listing_add/', views.movieListingAdd, name="movie_listing_add"),
+path('movie_listing_delete/', views.movieListingDelete, name="movie_listing_delete"),
 
 path('rate_listing/', views.rateListing, name="rate_listing"),
 path('rate_listing_add/', views.rateListingAdd, name="rate_listing_add"),

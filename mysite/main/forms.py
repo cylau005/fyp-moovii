@@ -74,3 +74,10 @@ class UserSearchForm(forms.Form):
     class Meta:
         model = User
         fields = ["username"]
+
+class DeleteMovieForm(forms.Form):
+    id = forms.IntegerField(label='Movie ID')
+
+    class Meta:
+        model = MovieList
+        fields = ["id"]

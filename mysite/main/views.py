@@ -7,7 +7,7 @@ from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
 from django.views.generic.list import ListView
-from .forms import RatingForm, AddMovieForm, AddRatingForm, DeleteRatingForm, MovieSearchForm, UserSearchForm
+from .forms import RatingForm, AddMovieForm, AddRatingForm, DeleteRatingForm, MovieSearchForm, UserSearchForm, DeleteMovieForm
 import string    
 import random 
 from django.contrib.auth.models import User
@@ -259,6 +259,29 @@ def movieListingAdd(request):
     
     return render(request, "main/movie_listing_add.html", {"form":form})
 
+def movieListingDelete(request):
+    if request.method == "POST":
+        form = DeleteMovieForm(request.POST)
+        if form.is_valid():
+            s = form.cleaned_data["id"]
+            print(s)
+            movie_check = MovieList.objects.filter(id=s)
+            
+            if not movie_check:
+                msg = 'Movie not exists'
+            else:
+                MovieList.objects.filter(id=s).delete()
+                msg = "Movie deleted"
+        else:
+            msg = "Please check if you field in correctly"
+            
+        return render(request, "main/movie_listing_delete.html", {"form":form,"msg":msg})
+        
+    else:
+        form = DeleteMovieForm()
+        delete_movie_form = MovieList()
+    
+    return render(request, "main/movie_listing_delete.html", {"form":form})
 
 def rateListing(request):
     ratings = RatingList.objects.all()
