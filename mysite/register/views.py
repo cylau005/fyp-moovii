@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from .models import Account, CreditCard
 from main.models import MovieList
-from django.contrib.auth.models import User
 
 from django.contrib.sites.shortcuts import get_current_site  
 from django.utils.encoding import force_bytes, force_str  
@@ -27,6 +26,7 @@ def register(request):
     split_genre = list(dict.fromkeys(split_genre))
     split_genre = list(filter(None, split_genre))
     msg = ''
+    
     if request.method == "POST":
         
         form = RegisterForm(request.POST)
@@ -44,17 +44,20 @@ def register(request):
             # Unique username check
             user_check = User.objects.filter(username=username)
             email_check = User.objects.filter(email=email)
-            ccnum_check = CreditCard.objects.filter(cc_number=ccnumber)
+
             
-            if not user_check and not email_check and not ccnum_check:
+            if not user_check and not email_check:
                 msg = 'Account created'
                 user = form.save(commit=False)  
                 user.is_active = False  
                 user.save()
                 t = Account(user=user, genres=g)
                 t.save()
+                print('account save')
                 c = CreditCard(user=user, cc_number=ccnumber, cc_name=ccname, cc_expirydate=ccexpirydate, cc_cvv=cccvv)
+                print('cc save')
                 c.save()
+                print('cc save')
 
                 # # to get the domain of the current site  
                 current_site = get_current_site(request)  
@@ -74,15 +77,11 @@ def register(request):
                 msg = 'Account created successfully. Please check your mailbox and comfirm your email address'
 
             else:
-                if not user_check and email_check:
+                if not user_check or not email_check:
                     msg = 'Username/Email Address exist. Please try with others'
-                if user_check and not email_check:
-                    msg = 'Username/Email Address exist. Please try with others'
-                if ccnum_check:
-                    msg = 'Credit Card used in other account. Please try with other credit card'
         
         else:
-            msg = 'Username/Email Address exist. Please try with others'
+            msg = 'Please check your payment detail'
             
         return render(request, "register/register.html", {"form":form, "split_genre":split_genre, "msg":msg})
     else:
@@ -96,10 +95,8 @@ def activate(request, uidb64, token):
     print('activation link')
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
-        print(uid)
-        #user = UserModel._default_manager.get(pk=uid)
         user = User.objects.get(pk=uid)
-        print(user)
+        
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
     if user is not None and default_token_generator.check_token(user, token):

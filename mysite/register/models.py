@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from datetime import datetime, timedelta
 from django.utils import timezone
+from creditcards.models import CardNumberField, CardExpiryField, SecurityCodeField
 
 # Create your models here.
 class Account(models.Model):
@@ -34,11 +35,12 @@ class Account(models.Model):
 
 class CreditCard(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    cc_number = models.CharField(verbose_name="cc_number", max_length=16, unique=True)
+    cc_number = CardNumberField('card number')
     cc_name = models.CharField(verbose_name="cc_name", max_length=40)
-    cc_expirydate = models.CharField(verbose_name="cc_expirydate", max_length=4)
-    cc_cvv = models.CharField(verbose_name="cc_cvv", max_length=3)
+    cc_expirydate = CardExpiryField('expiration date')
+    cc_cvv = SecurityCodeField('security code')
     subscription_enddate = models.DateTimeField(default=timezone.now()+timedelta(days=30))
+
 
     def __str__(self):
         return self.user.username
