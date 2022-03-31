@@ -8,7 +8,7 @@ sched = BlockingScheduler()
 @sched.scheduled_job('interval', minutes=1)
 def cr():
     print('do crawler') 
-    os.system("python main\imdbCrawl.py") 
+    os.system("python main/imdbCrawl.py") 
 
 
 sched.start()
