@@ -6,7 +6,12 @@ Create An Account
 {% load crispy_forms_tags %}
 
 {% block content %}
-
+<style>
+.payment{
+        padding: 20px;
+        display: none;
+    }
+</style>
 
     <form method="POST" class="form-group">
         {% csrf_token %}
@@ -63,7 +68,15 @@ Create An Account
       
           <br /><br />
       
-      <h2>Credit Card Detail</h2>
+      
+
+      <h2>Payment Method</h2>
+      <div>
+        <label><input type="radio" name="paymentRadio" value="cc"> Credit Card</label>
+        <label><input type="radio" name="paymentRadio" value="bi"> Bank In / PayNow</label>
+      </div>
+        
+      <div class="cc payment">
           <div class="form-row">
             <div class="form-group col-md-4">
               <label for="cc_number">Credit Card Number</label>
@@ -86,8 +99,64 @@ Create An Account
               <!-- <input type="text" class="form-control" name="cc_cvv"> -->
             </div>
           </div>
+        </div>
+
+        <div class="bi payment">
+          <p>Bank in to below account</p>
+          <table border="2">
+            <tr>
+              <td>Bank Name</td>
+              <td>United Overseas Bank Limited (UOB)</td>
+            </tr>
+            <tr>
+              <td>Account No:</td>
+              <td>4111-1111-1111</td>
+            </tr>
+            <tr>
+              <td>Amount</td>
+              <td>$10</td>
+            </tr>
+            <tr>
+              <td>Please put your email address and username in Remark box</td>
+              <td>Example: example@hotmail.com - example</td>
+            </tr>
+          </table>
+          
+          <b>OR</b>
+          <p>PayNow to below account</p>
+          <table border="2">
+            <tr>
+              <td>UEN Number</td>
+              <td>FYPMOOVII988</td>
+            </tr>
+            <tr>
+              <td>Account No:</td>
+              <td>4111-1111-1111</td>
+            </tr>
+            <tr>
+              <td>Amount</td>
+              <td>$10</td>
+            </tr>
+            <tr>
+              <td>Please put your email address and username in Remark box</td>
+              <td>Example: example@hotmail.com - example</td>
+            </tr>
+          </table>
+        </div>
         <button type="submit" class="btn btn-success">Register</button>
     </form>
     {{ msg }}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+      $(document).ready(function(){
+          $('input[type="radio"]').click(function(){
+              var inputValue = $(this).attr("value");
+              var targetBox = $("." + inputValue);
+              $(".payment").not(targetBox).hide();
+              $(targetBox).show();
+          });
+      });
+      </script>
 
 {% endblock %}

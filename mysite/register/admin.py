@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, CreditCard
+from .models import Account, CreditCard, BankIn
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin.sites import NotRegistered
@@ -24,3 +24,4 @@ admin.site.register(User, CustomizedUserAdmin)
 
 admin.site.register(Account)
 admin.site.register(CreditCard)
+admin.site.register(BankIn)

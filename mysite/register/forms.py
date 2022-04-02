@@ -6,18 +6,10 @@ from creditcards.forms import CardNumberField, CardExpiryField, SecurityCodeFiel
 class RegisterForm(UserCreationForm):
     username = forms.CharField()
     email = forms.EmailField()
-    # cc_number = forms.CharField(label='Credit Card Number', max_length=16)
-    # cc_name = forms.CharField(label='Credit Card Name', max_length=40)
-    # cc_expirydate = forms.CharField(label='Credit Card Expiry Date(MMYY)', max_length=4)
-    # cc_cvv = forms.CharField(label='Credit Card CVV', max_length=3)
-    # cc_number = forms.CharField(label='Credit Card Number', max_length=16)
-    cc_name = forms.CharField(label='Credit Card Name', max_length=40)
-    # cc_expirydate = forms.CharField(label='Credit Card Expiry Date(MMYY)', max_length=4)
-    # cc_cvv = forms.CharField(label='Credit Card CVV', max_length=3)
-
-    cc_number = CardNumberField(label='Card Number')
-    cc_expirydate = CardExpiryField(label='Expiration Date')
-    cc_cvv = SecurityCodeField(label='CVV/CVC')
+    cc_name = forms.CharField(label='Credit Card Name', max_length=40, required=False)
+    cc_number = CardNumberField(label='Card Number', required=False)
+    cc_expirydate = CardExpiryField(label='Expiration Date', required=False)
+    cc_cvv = SecurityCodeField(label='CVV/CVC', required=False)
 
     class Meta:
         model = User

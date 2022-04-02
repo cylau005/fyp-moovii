@@ -41,7 +41,12 @@ class CreditCard(models.Model):
     cc_cvv = SecurityCodeField('security code')
     subscription_enddate = models.DateTimeField(default=timezone.now()+timedelta(days=30))
 
-
     def __str__(self):
         return self.user.username
 
+class BankIn(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    subscription_enddate = models.DateTimeField(default=timezone.now()+timedelta(days=30))
+
+    def __str__(self):
+        return self.user.username

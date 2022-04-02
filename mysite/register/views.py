@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
-from .models import Account, CreditCard
+from .models import Account, CreditCard, BankIn
 from main.models import MovieList
 
 from django.contrib.sites.shortcuts import get_current_site  
@@ -35,53 +35,86 @@ def register(request):
             username = form.cleaned_data["username"]
             email = form.cleaned_data["email"]            
             g = request.POST['genres_chosen']
-            ccnumber = form.cleaned_data["cc_number"]
-            ccname = form.cleaned_data["cc_name"]
-            ccexpirydate = form.cleaned_data["cc_expirydate"]
-            cccvv = form.cleaned_data["cc_cvv"]
+            paymentRadio = request.POST['paymentRadio'] 
             
+            print(paymentRadio)
             
             # Unique username check
             user_check = User.objects.filter(username=username)
             email_check = User.objects.filter(email=email)
 
-            
-            if not user_check and not email_check:
-                msg = 'Account created'
-                user = form.save(commit=False)  
-                user.is_active = False  
-                user.save()
-                t = Account(user=user, genres=g)
-                t.save()
-                print('account save')
-                c = CreditCard(user=user, cc_number=ccnumber, cc_name=ccname, cc_expirydate=ccexpirydate, cc_cvv=cccvv)
-                print('cc save')
-                c.save()
-                print('cc save')
-
-                # # to get the domain of the current site  
-                current_site = get_current_site(request)  
-                mail_subject = 'Activate Your Account'  
-                message = render_to_string('register/acc_active_email.html', {  
-                    'user': user,  
-                    'domain': current_site.domain,  
-                    'uid':urlsafe_base64_encode(force_bytes(user.pk)),  
-                    'token':default_token_generator.make_token(user),  
-                })  
-
-                to_email = form.cleaned_data.get('email')  
-                email = EmailMessage(  
-                            mail_subject, message, to=[to_email]  
-                )  
-                email.send()  
-                msg = 'Account created successfully. Please check your mailbox and comfirm your email address'
-
-            else:
-                if not user_check or not email_check:
-                    msg = 'Username/Email Address exist. Please try with others'
         
+            if not user_check and not email_check:
+                if paymentRadio == 'cc':
+                    ccnumber = form.cleaned_data["cc_number"] or None
+                    ccname = form.cleaned_data["cc_name"] or None
+                    ccexpirydate = form.cleaned_data["cc_expirydate"] or None
+                    cccvv = form.cleaned_data["cc_cvv"] or None
+                    msg = 'Account created'
+                    user = form.save(commit=False)  
+                    user.is_active = False  
+                    user.save()
+                    t = Account(user=user, genres=g)
+                    t.save()
+                    print('account save')   
+
+                    print(ccnumber)
+
+                    if ccnumber is not None and ccname is not None and ccexpirydate is not None and cccvv is not None:
+                        c = CreditCard(user=user, cc_number=ccnumber, cc_name=ccname, cc_expirydate=ccexpirydate, cc_cvv=cccvv)
+                        c.save()
+                        print('cc save')
+
+                        # To get the domain of the current site  
+                        current_site = get_current_site(request)  
+                        mail_subject = 'Activate Your Account'  
+                        message = render_to_string('register/acc_active_email.html', {  
+                            'user': user,  
+                            'domain': current_site.domain,  
+                            'uid':urlsafe_base64_encode(force_bytes(user.pk)),  
+                            'token':default_token_generator.make_token(user),  
+                        })  
+
+                        to_email = form.cleaned_data.get('email')  
+                        email = EmailMessage(  
+                                    mail_subject, message, to=[to_email]  
+                        )  
+                        email.send()  
+                        msg = 'Account created successfully. Please check your mailbox and comfirm your email address'
+                    
+                    else:
+                        msg = 'Please check the payment detail'
+                        
+                if paymentRadio == 'bi':
+                    user = form.save(commit=False)  
+                    user.is_active = False  
+                    user.save()
+                    t = Account(user=user, genres=g)
+                    t.save()
+                    print('account save')
+                    d = BankIn(user=user)
+                    d.save()
+                    print('bi save')
+                    mail_subject = 'We will activate your account as soon as possible'  
+                     # To get the domain of the current site  
+                    current_site = get_current_site(request)  
+                    message = render_to_string('register/acc_active_email_bi.html', {  
+                        'user': user,  
+                        'domain': current_site.domain,  
+                        'uid':urlsafe_base64_encode(force_bytes(user.pk)),  
+                        'token':default_token_generator.make_token(user),  
+                    })  
+
+                    to_email = form.cleaned_data.get('email')  
+                    email = EmailMessage(  
+                                mail_subject, message, to=[to_email]  
+                    )  
+                    email.send()  
+                    msg = 'We will verify your payment and activate your account within 3 business days'
+            else:
+                msg = 'Username / Email address exists. Please try other'
         else:
-            msg = 'Please check your payment detail'
+            msg = 'Please check the payment detail'
             
         return render(request, "register/register.html", {"form":form, "split_genre":split_genre, "msg":msg})
     else:
