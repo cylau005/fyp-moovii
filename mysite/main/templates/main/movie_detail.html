@@ -14,7 +14,7 @@ Movie
     <div class="row">
       <div class="col-md-4">
           <div class="movie-img">
-              <img src="http://image.tmdb.org/t/p/w500//rmnQ9jKW72bHu8uKlMjPIb2VLMI.jpg" alt="" width="50%" height="50%"  />
+              <img src="https://image.tmdb.org/t/p/w500//uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg" alt="" width="50%" height="50%"  />
           </div>
       </div>
       <div class="col-md-8">
@@ -26,7 +26,7 @@ Movie
               <div class="col-md-6">
                   <p>
                     {% for movie in movielist %} 
-                      {% if movie.id == 171763 %}                        
+                      {% if movie.id == 1 %}                        
                         {{movie.movie_name|slice:":-6"}}
                       {% endif %}
                     {% endfor %}
@@ -40,7 +40,7 @@ Movie
               <div class="col-md-6">
                   <p>
                     {% for movie in movielist %} 
-                      {% if movie.id == 171763 %}
+                      {% if movie.id == 1 %}
                         {{movie.movie_genre}}
                       {% endif %}
                     {% endfor %}
@@ -54,7 +54,7 @@ Movie
               <div class="col-md-6">
                   <p>
                     {% for movie in movielist %} 
-                      {% if movie.id == 171763 %}
+                      {% if movie.id == 1 %}
                       {{movie.movie_name|slice:"-6:"}}
                       {% endif %}
                     {% endfor %}

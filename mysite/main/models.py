@@ -11,7 +11,6 @@ class MovieList(models.Model):
     overall_rating = models.IntegerField(default=None, blank=True, null=True)
     date_release = models.DateField(default=None, blank=True, null=True)
     movie_image_url = models.CharField(max_length=255, default=None, blank=True, null=True)
-    
 
 class RatingList(models.Model):
     id = models.AutoField(primary_key=True)
@@ -25,13 +24,11 @@ class RatingList(models.Model):
         choices=[('Rate','Rate'),
                 ('Share','Share'),],
         default=None, blank=True, null=True)
-    
   
 class PrizeList(models.Model):
     item_id = models.AutoField(primary_key=True)
     item_name =  models.CharField(max_length=100)
     require_points = models.IntegerField()
-
 
 class Reward_Point(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

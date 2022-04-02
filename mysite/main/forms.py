@@ -2,10 +2,6 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import RatingList, Reward_Point, MovieList, PrizeList
 
-class CreateNewList(forms.Form):
-    name = forms.CharField(label="Name", max_length=200)
-    check = forms.BooleanField(required=False)
-
 RATE_CHOICES = [
     (1, 1),
     (2, 2),
@@ -21,10 +17,10 @@ ACTION_CHOICES = [
 
 class RatingForm(forms.Form):
     rating_score = forms.IntegerField(label='Rating Score', 
-                  widget=forms.Select(choices=RATE_CHOICES))
+        widget=forms.Select(choices=RATE_CHOICES))
     movie_id = forms.IntegerField(label='Movie ID')
     action = forms.CharField(label='Rate or Share', 
-            widget=forms.Select(choices=ACTION_CHOICES))
+        widget=forms.Select(choices=ACTION_CHOICES))
 
     class Meta:
         model = RatingList
