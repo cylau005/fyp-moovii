@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from creditcards.forms import CardNumberField, CardExpiryField, SecurityCodeField
+
 class RegisterForm(UserCreationForm):
     username = forms.CharField()
     email = forms.EmailField()

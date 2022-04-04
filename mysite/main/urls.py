@@ -7,7 +7,6 @@ from django.urls import reverse_lazy
 urlpatterns = [
 path("", views.home, name="home"),
 path("home/", views.home, name="home"),
-#path("profile/<int:id>", views.profile, name="profile"),
 path("profile/", views.profile, name="profile"),
 path("movie_detail/<int:id>/", views.movies_detail_view, name='movie_detail'),
 
