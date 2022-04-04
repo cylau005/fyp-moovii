@@ -11,14 +11,48 @@ from .forms import RatingForm, AddMovieForm, AddRatingForm, DeleteRatingForm, Mo
 import string    
 import random 
 from django.contrib.auth.models import User
+# CF
+import pandas as pd
 
 # for CF related views
 def movie_rating(request):  
     movies = MovieList.objects.all()
-    ratings = RatingList.objects.all()
-    return render(request, "main/movie_detail.html", {"movielist": movies})
+    ratinglists = RatingList.objects.all()
+    # movie data frame
+    m=[]
+    mlist=[]
+    for mv in movies:
+        m=[mv.id, mv.movie_name, mv.movie_genre, mv.overall_rating, mv.date_release, mv.movie_image_url]
+        mlist+=[m]
+    movieDF = pd.DataFrame(mlist, columns=['movieId', 'movieName', 'movieGenre', 'overallRating', 'dateRelease', 'imageURL'])
+    print(movieDF)
+    # rating data frame
+    # r=[]
+    # rlist=[]
+    # for rating in ratinglists:
+    #     r=[rating.id, rating.user_id, rating.movie_id, rating.date_rating, rating.rating_score, rating.action]
+    #     rlist+=[r]
+    # rating_DF = pd.DataFrame(rlist, columns=['userId', 'userName', 'movieId', 'ratingDate', 'ratingScore', 'action'])
+    # print(rating_DF)
+    # print(rating_DF.dtypes)
+    # if request.user.is_authenticate:
+    #     userId = request.user.id
+    #     userInput=RatingList.objects.select_related('user_id').filter(user=userId)
+    #     if userInput.count() == 0:
+    #         recommender = None
+    #         userInput=None
+    #     else:
+    #         i=[]
+    #         iList=[]
+    #         for input in userInput:
+    #             i=[input.]
+
+    #     params={'rating_DF':rating_DF}
+    #     return params
+
 
 def home(request):
+    movie_rating(request)
     movies = MovieList.objects.all()
 
     if request.method == "POST":
