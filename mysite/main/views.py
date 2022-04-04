@@ -40,46 +40,52 @@ def home(request):
         movielist_form = MovieList()
     return render(request, "main/home.html", {"movielist": movies,"form":form})
 
-def movies_detail_view(request, id):
+def rating(request, id):
     movie = MovieList.objects.get(id=id)
     genres = movie.movie_genre
     genresm = genres.replace('|',' | ')
     date = movie.date_release
     datem = date.year
-    context= {'movie': movie,
+    context= {
+              'movie': movie,
               'movieyear':datem,
               'moviegenre':genresm,
               }
     
-    return render(request, 'main/movie_detail.html', context)
+    if 'actiontype' in request.POST:
+        m = id
+        a = request.POST['actiontype']
+        user = request.user
+        if a == "Rate":
+            s = request.POST['rating_score']
+            p = 2
+        else:
+            s = None
+            p = 3
+            
 
-def Rating(request):
-    if request.method == "POST":
-        form = RatingForm(request.POST)
-        if form.is_valid():
-            s = form.cleaned_data["rating_score"]
-            m = form.cleaned_data["movie_id"]
-            a = form.cleaned_data["action"]
-            user = request.user
-            if a == "Rate":
-                p = 2
-            else:
-                p = 3
-                s = None
+        t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
+        r = Reward_Point(user_id=user, point=p)
+        t.save()
+        r.save()
 
-            t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
-            r = Reward_Point(user_id=user, point=p)
-            t.save()
-            r.save()
+        msg = a + ' successfully'
 
-        return HttpResponseRedirect("/home")
+        context= {
+              'movie': movie,
+              'movieyear':datem,
+              'moviegenre':genresm,
+              'msg':msg,
+              }
+
+        # return render(request, "main/movie_detail.html", context)
+        return render(request, "main/movie_detail.html", context)
         
-    else:
-        form = RatingForm()
-        rating_form = RatingList()
+    # else:
+    #     rating_form = RatingList()
     
     movies = MovieList.objects.all()
-    return render(request, "main/movie_detail.html", {"form":form, "movielist": movies})
+    return render(request, "main/movie_detail.html", context)
 
 # default and profile views
 def aboutus(response):
