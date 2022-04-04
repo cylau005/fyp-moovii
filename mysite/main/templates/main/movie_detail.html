@@ -51,11 +51,7 @@ Movie
     <div class="row">
       <div class="col-md-4">
           <div class="movie-img">
-<<<<<<< HEAD
               <img src={{movie.movie_image_url}} alt="" width="80%" height="80%"  />
-=======
-              <img src="https://image.tmdb.org/t/p/w500//uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg" alt="" width="50%" height="50%"  />
->>>>>>> f888b41b6e40acf6426bc3b8a47bff9038f9b476
           </div>
       </div>
       <div class="col-md-8">
@@ -65,17 +61,7 @@ Movie
                   <label>Movie Name</label>
               </div>
               <div class="col-md-6">
-<<<<<<< HEAD
                   <label>{{movie.movie_name}}</label>
-=======
-                  <p>
-                    {% for movie in movielist %} 
-                      {% if movie.id == 1 %}                        
-                        {{movie.movie_name|slice:":-6"}}
-                      {% endif %}
-                    {% endfor %}
-                  </p>
->>>>>>> f888b41b6e40acf6426bc3b8a47bff9038f9b476
               </div>
             </div>
             <div class="row">
@@ -83,17 +69,7 @@ Movie
                   <label>Movie Genre</label>
               </div>
               <div class="col-md-6">
-<<<<<<< HEAD
                   <label>{{moviegenre}}</label>
-=======
-                  <p>
-                    {% for movie in movielist %} 
-                      {% if movie.id == 1 %}
-                        {{movie.movie_genre}}
-                      {% endif %}
-                    {% endfor %}
-                  </p>
->>>>>>> f888b41b6e40acf6426bc3b8a47bff9038f9b476
               </div>
             </div>
             <div class="row">
@@ -101,7 +77,6 @@ Movie
                   <label>Release Year</label>
               </div>
               <div class="col-md-6">
-<<<<<<< HEAD
                   
                   <label>{{movieyear}}</label> 
               </div>
@@ -113,15 +88,6 @@ Movie
               <div class="col-md-6">
                   
                   <label>{{movie.overall_rating}}</label> 
-=======
-                  <p>
-                    {% for movie in movielist %} 
-                      {% if movie.id == 1 %}
-                      {{movie.movie_name|slice:"-6:"}}
-                      {% endif %}
-                    {% endfor %}
-                  </p>
->>>>>>> f888b41b6e40acf6426bc3b8a47bff9038f9b476
               </div>
             </div>            
           </div>
