@@ -8,57 +8,77 @@ Movie
 {% endblock css%}
 {% block content %}
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+.rate {
+    float: left;
+    height: 50px;
+    padding: 0 9px;
+}
+.rate:not(:checked) > input {
+    position:absolute;
+    top:-10000px;
+}
+.rate:not(:checked) > label {
+    float:right;
+    width:1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:25px;
+    color:#ccc;
+}
+.rate:not(:checked) > label:before {
+    content: '★  ';
+}
+.rate > input:checked ~ label {
+    color: #23a94b;    
+}
+.rate:not(:checked) > label:hover,
+.rate:not(:checked) > label:hover ~ label {
+    color: #23a94b;  
+}
+.rate > input:checked + label:hover,
+.rate > input:checked + label:hover ~ label,
+.rate > input:checked ~ label:hover,
+.rate > input:checked ~ label:hover ~ label,
+.rate > label:hover ~ input:checked ~ label {
+    color: #23a94b;
+}
+</style>
+
 <div class="movie-detail">
   <form method="POST" class="form-group">
     <div class="row">
       <div class="col-md-4">
           <div class="movie-img">
-              <img src="http://image.tmdb.org/t/p/w500//rmnQ9jKW72bHu8uKlMjPIb2VLMI.jpg" alt="" width="50%" height="50%"  />
+              <img src={{movie.movie_image_url}} alt="" width="80%" height="80%"  />
           </div>
       </div>
       <div class="col-md-8">
           <div class="movie-detail">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                   <label>Movie Name</label>
               </div>
               <div class="col-md-6">
-                  <p>
-                    {% for movie in movielist %} 
-                      {% if movie.id == 171763 %}                        
-                        {{movie.movie_name|slice:":-6"}}
-                      {% endif %}
-                    {% endfor %}
-                  </p>
+                  <label>{{movie.movie_name}}</label>
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                   <label>Movie Genre</label>
               </div>
               <div class="col-md-6">
-                  <p>
-                    {% for movie in movielist %} 
-                      {% if movie.id == 171763 %}
-                        {{movie.movie_genre}}
-                      {% endif %}
-                    {% endfor %}
-                  </p>
+                  <label>{{moviegenre}}</label>
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                   <label>Release Year</label>
               </div>
               <div class="col-md-6">
-                  <p>
-                    {% for movie in movielist %} 
-                      {% if movie.id == 171763 %}
-                      {{movie.movie_name|slice:"-6:"}}
-                      {% endif %}
-                    {% endfor %}
-                  </p>
+                  
+                  <label>{{movieyear}}</label> 
               </div>
             </div>            
           </div>
@@ -66,15 +86,27 @@ Movie
 
           <div class="p-rating">
             <label for="rating">Your Rating:</label><br/>
-            <span class="fa fa-star checked"></span>
-            <span class="fa fa-star checked"></span>
-            <span class="fa fa-star checked"></span>
-            <span class="fa fa-star"></span>
-            <span class="fa fa-star"></span>         
-            
+            <div class="rate">
+              <input type="radio" id="star5" name="rate" value="5" />
+              <label for="star5" title="text">5</label>
+              <input type="radio" id="star4" name="rate" value="4" />
+              <label for="star4" title="text">4</label>
+              <input type="radio" id="star3" name="rate" value="3" />
+              <label for="star3" title="text">3</label>
+              <input type="radio" id="star2" name="rate" value="2" />
+              <label for="star2" title="text">2</label>
+              <input type="radio" id="star1" name="rate" value="1" />
+              <label for="star1" title="text">1</label>
+            </div>
             <input type="submit" class="btn btn-primary" value="Rate">
             <input type="submit" class="btn btn-primary" value="Share">
           </div>
+          <br />
+
+          <i>By doing Rating and Sharing, you can accumulate your reward points and redeem attractive prizes :)</i>
+
+
+          
           <!-- chee yang           
           {% csrf_token %}
           <div class="form-row">

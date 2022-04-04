@@ -2,7 +2,7 @@ from urllib import request
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import MovieList, RatingList, Reward_Point, PrizeList
-from .resources import MovieListResources, RatingListResources, RewardPointResources
+from .resources import MovieListResources, RatingListResources, RewardPointResources, PrizeListResources
 from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
@@ -11,6 +11,7 @@ from .forms import RatingForm, AddMovieForm, AddRatingForm, DeleteRatingForm, Mo
 import string    
 import random 
 from django.contrib.auth.models import User
+import datetime
 
 # Create your views here.
 def movie_upload(request):
@@ -69,7 +70,7 @@ def prize_upload(request):
             messages.info(request, 'Wrong Format')
             return render(request, 'prize_upload.html')
 
-        imported_data = dataset.load(new_prizes.read(), format='xlsx')
+        imported_data = dataset.load(new_prize.read(), format='xlsx')
         for data in imported_data:
             value = RatingList(
                 data[0],
@@ -122,8 +123,19 @@ def home(request):
         movielist_form = MovieList()
     return render(request, "main/home.html", {"movielist": movies,"form":form})
 
-def view(response):
-    return render(response, "main/view.html", {})
+def movies_detail_view(request, id):
+    movie = MovieList.objects.get(id=id)
+    genres = movie.movie_genre
+    genresm = genres.replace('|',' | ')
+    date = movie.date_release
+    datem = date.year
+    context= {'movie': movie,
+              'movieyear':datem,
+              'moviegenre':genresm,
+              }
+    
+    return render(request, 'main/movie_detail.html', context)
+
 
 def aboutus(response):
     return render(response, "main/aboutus.html", {})

@@ -9,7 +9,7 @@ path("", views.home, name="home"),
 path("home/", views.home, name="home"),
 #path("profile/<int:id>", views.profile, name="profile"),
 path("profile/", views.profile, name="profile"),
-path("movie_detail/", views.Rating, name="movie_detail"),
+path("movie_detail/<int:id>/", views.movies_detail_view, name='movie_detail'),
 
 path('movie_upload/', views.movie_upload, name="movie_upload"),
 path('rating_upload/', views.rating_upload, name="rating_upload"),

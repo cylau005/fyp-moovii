@@ -22,7 +22,7 @@ Home
     <div class="col-md-2">
         <div class="movie-img">
             <a href="/movie_detail">
-                <img src="https://cdn.moviefone.com/admin-uploads/posters/morbius-movie-poster_1638710998.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+                <img src="https://cdn.moviefone.com/admin-uploads/posters/morbius-movie-poster_1638710998.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
             </a>
             <p>Morbius</p>
         </div>
@@ -30,28 +30,28 @@ Home
 
     <div class="col-md-2">
         <div class="movie-img">
-            <img src="https://cdn.moviefone.com/admin-uploads/posters/sonic2-movie-poster_1638995220.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            <img src="https://cdn.moviefone.com/admin-uploads/posters/sonic2-movie-poster_1638995220.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
             <p>Sonic The Hedgehog 2</p>
         </div>
     </div>
 
     <div class="col-md-2">
         <div class="movie-img">
-            <img src="https://cdn.moviefone.com/admin-uploads/posters/thesecretsofdumbledoreposter_1646063833.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            <img src="https://cdn.moviefone.com/admin-uploads/posters/thesecretsofdumbledoreposter_1646063833.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
             <p>Fantastic Beast: The Secrets of Dumbledore</p>
         </div>
     </div>
 
     <div class="col-md-2">
         <div class="movie-img">
-            <img src="https://cdn.moviefone.com/admin-uploads/posters/thelostcityposter_1644600130.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            <img src="https://cdn.moviefone.com/admin-uploads/posters/thelostcityposter_1644600130.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
             <p>The Lost City</p>
         </div>
     </div>
 
     <div class="col-md-2">
         <div class="movie-img">
-            <img src="https://cdn.moviefone.com/image-assets/438148/wKiOkZTN9lUUUNZLmtnwubZYONg.jpg?d=360x540&q=60" alt="" width="75%" height="75%"  />
+            <img src="https://cdn.moviefone.com/image-assets/438148/wKiOkZTN9lUUUNZLmtnwubZYONg.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
             <p>Minions: The Rise of Gru</p>
         </div>
     </div>
@@ -64,7 +64,7 @@ Home
             {% if 'Animation' in movie.movie_genre and movie.overall_rating == 5 %}
                 <div class="col-md-2">
                     <div class="movie-img">
-                        <img src={{movie.movie_image_url}} alt="" width="75%" height="75%"  />
+                        <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                         <p>{{movie.movie_name}}</p>
                     </div>
                 </div>
@@ -80,8 +80,8 @@ Home
         {% if movie.overall_rating == 5 %}
               <div class="col-md-2">
                   <div class="movie-img">
-                    <a href="/movie_detail">
-                      <img src={{movie.movie_image_url}} alt="" width="75%" height="75%"  />
+                    <a href="/movie_detail/{{movie.id}}">
+                      <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                     </a>
                       <p>{{movie.movie_name}}</p>
                   </div>
@@ -100,8 +100,8 @@ Home
           {% if 'Action' in movie.movie_genre and movie.overall_rating == 5 %}
               <div class="col-md-2">
                   <div class="movie-img">
-                    <a href="/movie_detail">
-                      <img src={{movie.movie_image_url}} alt="" width="75%" height="75%"  />
+                    <a href="/movie_detail/{{movie.id}}">
+                      <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                     </a>
                       <p>{{movie.movie_name}}</p>
                   </div>
@@ -118,8 +118,8 @@ Home
           {% if 'Comedy' in movie.movie_genre and movie.overall_rating == 5 %}
               <div class="col-md-2">
                   <div class="movie-img">
-                    <a href="/movie_detail">
-                      <img src={{movie.movie_image_url}} alt="" width="75%" height="75%"  />
+                    <a href="/movie_detail/{{movie.id}}">
+                      <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                     </a>
                       <p>{{movie.movie_name}}</p>
                   </div>
