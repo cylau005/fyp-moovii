@@ -40,6 +40,7 @@ def home(request):
         movielist_form = MovieList()
     return render(request, "main/home.html", {"movielist": movies,"form":form})
 
+<<<<<<< HEAD
 def movies_detail_view(request, id):
     movie = MovieList.objects.get(id=id)
     genres = movie.movie_genre
@@ -53,6 +54,8 @@ def movies_detail_view(request, id):
     
     return render(request, 'main/movie_detail.html', context)
 
+=======
+>>>>>>> f888b41b6e40acf6426bc3b8a47bff9038f9b476
 def Rating(request):
     if request.method == "POST":
         form = RatingForm(request.POST)
