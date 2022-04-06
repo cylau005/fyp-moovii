@@ -157,6 +157,7 @@ def profile(response):
                 
             r = Reward_Point(user_id=user, point=point, redeem_item_id=item, code = ran)
             r.save()
+            data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
         
         else:
             msg = 'You do not have enough point'
