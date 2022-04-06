@@ -11,6 +11,7 @@ from .forms import RatingForm, AddMovieForm, AddRatingForm, DeleteRatingForm, Mo
 import string    
 import random 
 from django.contrib.auth.models import User
+import datetime
 # CF
 import pandas as pd
 
@@ -75,6 +76,7 @@ def home(request):
     return render(request, "main/home.html", {"movielist": movies,"form":form})
 
 def rating(request, id):
+    user = request.user
     movie = MovieList.objects.get(id=id)
     genres = movie.movie_genre
     genresm = genres.replace('|',' | ')
@@ -86,24 +88,38 @@ def rating(request, id):
               'moviegenre':genresm,
               }
     
+
+    
     if 'actiontype' in request.POST:
+        # if todayRateCount < 5:
         m = id
         a = request.POST['actiontype']
+        print(a)
         user = request.user
-        if a == "Rate":
-            s = request.POST['rating_score']
-            p = 2
-        else:
-            s = None
-            p = 3
+
+        today = datetime.date.today()
+        todayRateCount = RatingList.objects.filter(user_id=user, date_rating=today, action=a).count()
+        print(todayRateCount)
+
+        if todayRateCount < 5:
+            if a == "Rate":
+                s = request.POST['rating_score']
+                p = 2
+
+            else:
+                s = None
+                p = 3
             
+            t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
+            r = Reward_Point(user_id=user, point=p)
+            t.save()
+            r.save()
 
-        t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
-        r = Reward_Point(user_id=user, point=p)
-        t.save()
-        r.save()
-
-        msg = a + ' successfully'
+            msg = a + ' successfully'
+        
+        else:
+            msg = "You reached today limit, please try again tomorrow"
+                    
 
         context= {
               'movie': movie,
@@ -112,11 +128,8 @@ def rating(request, id):
               'msg':msg,
               }
 
-        # return render(request, "main/movie_detail.html", context)
         return render(request, "main/movie_detail.html", context)
         
-    # else:
-    #     rating_form = RatingList()
     
     movies = MovieList.objects.all()
     return render(request, "main/movie_detail.html", context)
