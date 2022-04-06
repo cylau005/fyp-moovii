@@ -2,7 +2,7 @@ from urllib import request
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import MovieList, RatingList, Reward_Point, PrizeList
-from .resources import MovieListResources, RatingListResources, RewardPointResources
+from .resources import MovieListResources, RatingListResources, RewardPointResources, PrizeListResources
 from django.contrib import messages
 from tablib import Dataset
 from django.db.models import Sum
@@ -25,7 +25,7 @@ def movie_rating(request):
         m=[mv.id, mv.movie_name, mv.movie_genre, mv.overall_rating, mv.date_release, mv.movie_image_url]
         mlist+=[m]
     movieDF = pd.DataFrame(mlist, columns=['movieId', 'movieName', 'movieGenre', 'overallRating', 'dateRelease', 'imageURL'])
-    print(movieDF)
+    # print(movieDF)
     # rating data frame
     # r=[]
     # rlist=[]
@@ -136,8 +136,9 @@ def profile(response):
         
         item = response.POST['prize_chosen']
         point = data['thedata']
-        
-        if point >= 1:    
+        msg = ""
+
+        if point is not None and point >= 1:    
             point = 0-1
             S = 30
             ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
@@ -225,7 +226,7 @@ def prize_upload(request):
             messages.info(request, 'Wrong Format')
             return render(request, 'prize_upload.html')
 
-        imported_data = dataset.load(new_prizes.read(), format='xlsx')
+        imported_data = dataset.load(new_prize.read(), format='xlsx')
         for data in imported_data:
             value = RatingList(
                 data[0],
