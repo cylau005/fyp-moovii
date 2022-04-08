@@ -75,7 +75,7 @@ def home(request):
         movielist_form = MovieList()
     return render(request, "main/home.html", {"movielist": movies,"form":form})
 
-def rating(request, id):
+def rating(request, id):    
     user = request.user
     movie = MovieList.objects.get(id=id)
     genres = movie.movie_genre
@@ -88,36 +88,45 @@ def rating(request, id):
               'moviegenre':genresm,
               }
     
-
+    today = datetime.date.today()
     
     if 'actiontype' in request.POST:
         m = id
         a = request.POST['actiontype']
-        print(a)
-        user = request.user
 
-        today = datetime.date.today()
-        todayRateCount = RatingList.objects.filter(user_id=user, date_rating=today, action=a).count()
-        print(todayRateCount)
+        rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a)
+        num_rated_movie = len(rated_movie)
 
-        if todayRateCount < 5:
-            if a == "Rate":
-                s = request.POST['rating_score']
-                p = 2
+        if num_rated_movie < 1:                
+            todayRateCount = RatingList.objects.filter(user_id=user, date_rating=today, action=a).count()
 
-            else:
-                s = None
-                p = 3
+            if todayRateCount < 5:
+                if a == "Rate":
+                    s = request.POST['rating_score']
+                    p = 2
+
+                else:
+                    s = None
+                    p = 3
+                
+                t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
+                r = Reward_Point(user_id=user, point=p)
+                t.save()
+                r.save()
+
+                msg = a + ' successfully'
             
-            t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
-            r = Reward_Point(user_id=user, point=p)
-            t.save()
-            r.save()
-
-            msg = a + ' successfully'
+            else:
+                msg = "You reached today limit, please try again tomorrow"
         
         else:
-            msg = "You reached today limit, please try again tomorrow"
+            if a == "Rate":
+                s = request.POST['rating_score']
+                rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a).update(rating_score=s)
+                msg = a + ' successfully'
+            else:
+                rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a).update(date_rating=today)
+                msg = a + ' successfully'
                     
 
         context= {
@@ -129,8 +138,6 @@ def rating(request, id):
 
         return render(request, "main/movie_detail.html", context)
         
-    
-    movies = MovieList.objects.all()
     return render(request, "main/movie_detail.html", context)
 
 # default and profile views
