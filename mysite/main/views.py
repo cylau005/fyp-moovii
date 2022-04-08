@@ -91,7 +91,6 @@ def rating(request, id):
 
     
     if 'actiontype' in request.POST:
-        # if todayRateCount < 5:
         m = id
         a = request.POST['actiontype']
         print(a)
@@ -142,7 +141,7 @@ def profile(response):
     user = response.user
     data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
     prize = PrizeList.objects.all()
-    reward = Reward_Point.objects.filter(user_id=user).order_by('date_modified')
+    reward = Reward_Point.objects.filter(user_id=user).order_by('-date_modified')
     prizeItem = PrizeList.objects.all()
 
     if 'prize_chosen' in response.POST:
@@ -272,7 +271,7 @@ def reward_point_upload(request):
     return render(request, 'reward_point_upload.html')
 
 def movieListing(request): 
-    movies = MovieList.objects.all()
+    movies = MovieList.objects.all().order_by('-id')
 
     if request.method == "POST":
         form = MovieSearchForm(request.POST)
@@ -297,10 +296,13 @@ def movieListing(request):
     return render(request, "main/movie_listing.html", {"movielist": movies,"form":form})
 
 def movieListingAdd(request):
+    movie_id = MovieList.objects.latest('id').id
+    latest_id = movie_id + 1
+    
     if request.method == "POST":
         form = AddMovieForm(request.POST)
         if form.is_valid():
-            i = form.cleaned_data["id"]
+            i = latest_id
             n = form.cleaned_data["movie_name"]
             g = form.cleaned_data["movie_genre"]
             a = form.cleaned_data["overall_rating"]
@@ -320,7 +322,7 @@ def movieListingAdd(request):
         else:
             msg = "Please check if you field in correctly"
             
-        return render(request, "main/movie_listing_add.html", {"msg":msg})
+        return render(request, "main/movie_listing_add.html", {"form":form, "msg":msg})
         
     else:
         form = AddMovieForm()
@@ -332,14 +334,14 @@ def movieListingDelete(request):
     if request.method == "POST":
         form = DeleteMovieForm(request.POST)
         if form.is_valid():
-            s = form.cleaned_data["id"]
+            s = form.cleaned_data["movie_name"]
             print(s)
-            movie_check = MovieList.objects.filter(id=s)
+            movie_check = MovieList.objects.filter(movie_name=s)
             
             if not movie_check:
                 msg = 'Movie not exists'
             else:
-                MovieList.objects.filter(id=s).delete()
+                MovieList.objects.filter(movie_name=s).delete()
                 msg = "Movie deleted"
         else:
             msg = "Please check if you field in correctly"
@@ -353,7 +355,7 @@ def movieListingDelete(request):
     return render(request, "main/movie_listing_delete.html", {"form":form})
 
 def rateListing(request):
-    ratings = RatingList.objects.all()
+    ratings = RatingList.objects.all().order_by('-id')
     return render(request, "main/rate_listing.html", {"ratelist": ratings})
 
 def rateListingAdd(request):

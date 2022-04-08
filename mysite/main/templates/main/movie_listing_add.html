@@ -12,10 +12,6 @@ View List
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="movie_id">Movie ID</label>
-              {{form.id}}
-            </div>
-            <div class="form-group col-md-6">
               <label for="movie_name">Movie Name</label>
               {{form.movie_name}}
             </div>
@@ -28,7 +24,7 @@ View List
               {{form.overall_rating}}
             </div>
             <div class="form-group col-md-6">
-                <label for="date_release">Date Released</label>
+                <label for="date_release">Date Released (YYYY-MM-DD)</label>
                 {{form.date_release}}
               </div>
             <div class="form-group col-md-6">

@@ -27,7 +27,6 @@ class RatingForm(forms.Form):
         fields = ["rating_score", "movie_id", "action"]
   
 class AddMovieForm(forms.Form):
-    id = forms.IntegerField(label='Movie ID')
     movie_name = forms.CharField(label='Movie Name')
     movie_genre = forms.CharField(label='Movie Genre')
     overall_rating = forms.CharField(label='Overall Rating')
@@ -36,7 +35,7 @@ class AddMovieForm(forms.Form):
 
     class Meta:
         model = MovieList
-        fields = ["id","movie_name","movie_genre","overall_rating","date_release","movie_image_url"]
+        fields = ["movie_name","movie_genre","overall_rating","date_release","movie_image_url"]
 
 class AddRatingForm(forms.Form):
     user_id = forms.CharField(label='User ID')
@@ -72,8 +71,8 @@ class UserSearchForm(forms.Form):
         fields = ["username"]
 
 class DeleteMovieForm(forms.Form):
-    id = forms.IntegerField(label='Movie ID')
+    movie_name = forms.CharField(label='Movie Name')
 
     class Meta:
         model = MovieList
-        fields = ["id"]
+        fields = ["movie_name"]
