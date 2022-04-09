@@ -35,16 +35,16 @@ def movie_rating(request):
     r=[]
     rlist=[]
     for rating in ratinglists:
-        r=[rating.user_id, rating.movie_id, rating.rating_score]
+        r=[rating.user_id.id, rating.movie_id, rating.rating_score]
         rlist+=[r]
     rating_DF = pd.DataFrame(rlist, columns=['userId', 'movieId', 'ratingScore'])
-
+    print(rating_DF)
     print('Form User Input DF...\n')
     user = [
         {'movieName': 'Toys (1992)', 'ratingScore':1}, # userId sulaiman.hopkins, movieId 208
         {'movieName': 'Bedknobs and Broomsticks (1971)', 'ratingScore':5}, # userId sulaiman.hopkins, movieId 102
-        # {'movieName': 'Total Recall (1990)', 'ratingScore':5}, # userId archie.carver
-        # {'movieName': 'In & Out (1997)', 'ratingScore':3}, # userId archie.carver
+        {'movieName': 'Total Recall (1990)', 'ratingScore':3}, # userId archie.carver, movieId 253
+        {'movieName': 'In & Out (1997)', 'ratingScore':3}, # userId archie.carver, movieId 165
     ]
     input_DF = pd.DataFrame(user)
 
