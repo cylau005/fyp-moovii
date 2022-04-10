@@ -1,7 +1,7 @@
 from urllib import request
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import MovieList, RatingList, Reward_Point, PrizeList
+from .models import MovieList, RatingList, Reward_Point, PrizeList, CF_List
 from .resources import MovieListResources, RatingListResources, RewardPointResources, PrizeListResources
 from django.contrib import messages
 from tablib import Dataset
@@ -18,120 +18,158 @@ import math
 import pandas as pd
 
 # for CF related views
-def movie_rating(request):  
-    print('a')
-    # movies = MovieList.objects.all()
-    # ratinglists = RatingList.objects.filter(action='Rate')
+def movie_rating(request, id, user, user_score):  
+    # print('a')
+    movies = MovieList.objects.all()
+    ratinglists = RatingList.objects.filter(action='Rate')
 
-    # print('Form Movie DF\n')
-    # # movie data frame
-    # m=[]
-    # mlist=[]
-    # for mv in movies:
-    #     m=[mv.id, mv.movie_name]
-    #     mlist+=[m]
-    # movie_DF = pd.DataFrame(mlist, columns=['movieId', 'movieName'])
+    print('Form Movie DF\n')
+    # movie data frame
+    m=[]
+    mlist=[]
+    for mv in movies:
+        m=[mv.id, mv.movie_name, mv.movie_image_url]
+        mlist+=[m]
+    movie_DF = pd.DataFrame(mlist, columns=['movieId', 'movieName', 'movie_image_url'])
 
-    # print('Form Rating DF...\n')
-    # # rating data frame
-    # r=[]
-    # rlist=[]
-    # for rating in ratinglists:
-    #     r=[rating.user_id.id, rating.movie_id, rating.rating_score]
-    #     rlist+=[r]
-    # rating_DF = pd.DataFrame(rlist, columns=['userId', 'movieId', 'ratingScore'])
-    # print(rating_DF)
-    # print('Form User Input DF...\n')
-    # user = [
-    #     {'movieName': 'Total Recall (1990)', 'ratingScore':3}, # userId archie.carver, movieId 253
-    #     {'movieName': 'In & Out (1997)', 'ratingScore':3}, # userId archie.carver, movieId 165
-    #     {'movieName': 'Toys (1992)', 'ratingScore':1}, # userId sulaiman.hopkins, movieId 208
-    #     {'movieName': 'Bedknobs and Broomsticks (1971)', 'ratingScore':5}, # userId sulaiman.hopkins, movieId 102
-    #     {'movieName': 'Star Wars: Episode IV - A New Hope (1977)', 'ratingScore':5}, 
-    #     {'movieName': 'Scary Movie (2000)', 'ratingScore':4}, 
-    # ]
-    # input_DF = pd.DataFrame(user)
+    print('Form Rating DF...\n')
+    # rating data frame
+    r=[]
+    rlist=[]
+    for rating in ratinglists:
+        r=[rating.user_id.id, rating.movie_id, rating.rating_score]
+        rlist+=[r]
+    rating_DF = pd.DataFrame(rlist, columns=['userId', 'movieId', 'ratingScore'])
+    print(rating_DF)
 
-    # ID = movie_DF[movie_DF['movieName'].isin(input_DF['movieName'].tolist())]
-    # input_DF = pd.merge(ID, input_DF)
-
-    # print('Find movie name and id for Input DF...\n')
-    # print(input_DF)
-    # print()
-
-    # print('Find user who done rating on same movie...\n')
-    # users = rating_DF[rating_DF['movieId'].isin(input_DF['movieId'].tolist())]
-    # print(users)
+    chosen_MovieName = MovieList.objects.get(id=id)
+    chosen_MovieName = chosen_MovieName.movie_name
+    print(chosen_MovieName)
     
-    # print(users.shape)
-    # print()
-
-    # userSubsetGroup = users.groupby(['userId'])
-
-    # print('Done GroupBy')
+    print('Form User Input DF...\n')
+    user_rating = [
+        {'movieName': chosen_MovieName, 'ratingScore': int(user_score)}, # userId archie.carver, movieId 253
+        # {'movieName': 'Braveheart (1995)', 'ratingScore': 5}, # userId archie.carver, movieId 253
+        # {'movieName': 'In & Out (1997)', 'ratingScore':3}, # userId archie.carver, movieId 165
+        # {'movieName': 'Toys (1992)', 'ratingScore':1}, # userId sulaiman.hopkins, movieId 208
+        # {'movieName': 'Bedknobs and Broomsticks (1971)', 'ratingScore':5}, # userId sulaiman.hopkins, movieId 102
+        # {'movieName': 'Star Wars: Episode IV - A New Hope (1977)', 'ratingScore':5}, 
+        # {'movieName': 'Scary Movie (2000)', 'ratingScore':4}, 
+    ]
+    input_DF = pd.DataFrame(user_rating)
+    print(input_DF)
     
-    # userSubsetGroup = sorted(userSubsetGroup, key=lambda x:len(x[1]), reverse=True)    
-    
-    # print('Done Sorted')
-    # print(userSubsetGroup)
+    # Finding existing rating for current user
+    user_Rating = RatingList.objects.filter(user_id=user)
+    # chosen_MovieName = MovieList.objects.get(id=user_Rating.movie_id)
+    for movie in user_Rating:
+        print(movie.movie_id)
+        movieName = MovieList.objects.get(id=movie.movie_id)
+        print(movieName.movie_name)
+        temp = pd.DataFrame({"movieName":[movieName.movie_name],
+                             "ratingScore":[int(movie.rating_score)],
+        })
+        input_DF = input_DF.append(temp)
 
-    # #Person correlation, where key is the user id and value is the coefficient
-    # pearsonCorDict = {}
+    print(input_DF)
+
+
+    ID = movie_DF[movie_DF['movieName'].isin(input_DF['movieName'].tolist())]
+    input_DF = pd.merge(ID, input_DF)
+
+    print('Find movie name and id for Input DF...\n')
+    print(input_DF)
+    print()
+
+    print('Find user who done rating on same movie...\n')
+    users = rating_DF[rating_DF['movieId'].isin(input_DF['movieId'].tolist())]
+    print(users)
     
-    # for name, group in userSubsetGroup:
-    #     group = group.sort_values(by='movieId')
-    #     input_DF = input_DF.sort_values(by='movieId')
-    #     n = len(group)
-    #     temp = input_DF[input_DF['movieId'].isin(group['movieId'].tolist())]
-    #     tempRatingList = temp['ratingScore'].tolist()
-    #     tempGroupList = group['ratingScore'].tolist()
+    print(users.shape)
+    print()
+
+    userSubsetGroup = users.groupby(['userId'])
+
+    print('Done GroupBy')
+    
+    userSubsetGroup = sorted(userSubsetGroup, key=lambda x:len(x[1]), reverse=True)    
+    
+    print('Done Sorted')
+    print(userSubsetGroup)
+
+    #Person correlation, where key is the user id and value is the coefficient
+    pearsonCorDict = {}
+    
+    for name, group in userSubsetGroup:
+        group = group.sort_values(by='movieId')
+        input_DF = input_DF.sort_values(by='movieId')
+        n = len(group)
+        temp = input_DF[input_DF['movieId'].isin(group['movieId'].tolist())]
+        tempRatingList = temp['ratingScore'].tolist()
+        tempGroupList = group['ratingScore'].tolist()
         
-    #     #calculating person correlation between two users, so called x and y
-    #     Sxx = sum([i**2 for i in tempRatingList]) - pow(sum(tempRatingList),2)/float(n)
-    #     Syy = sum([i**2 for i in tempGroupList]) - pow(sum(tempGroupList),2)/float(n)
-    #     Sxy = sum( i*j for i, j in zip(tempRatingList, tempGroupList)) - sum(tempRatingList)*sum(tempGroupList)/float(n)
+        #calculating person correlation between two users, so called x and y
+        Sxx = sum([i**2 for i in tempRatingList]) - pow(sum(tempRatingList),2)/float(n)
+        Syy = sum([i**2 for i in tempGroupList]) - pow(sum(tempGroupList),2)/float(n)
+        Sxy = sum( i*j for i, j in zip(tempRatingList, tempGroupList)) - sum(tempRatingList)*sum(tempGroupList)/float(n)
         
-    #     if Sxx != 0 and Syy != 0:
-    #         pearsonCorDict[name] = Sxy/sqrt(Sxx*Syy)
-    #     else:
-    #         pearsonCorDict[name] = 0
+        if Sxx != 0 and Syy != 0:
+            pearsonCorDict[name] = Sxy/sqrt(Sxx*Syy)
+        else:
+            pearsonCorDict[name] = 0
         
-    #     print(pearsonCorDict.items())
+        print(pearsonCorDict.items())
     
 
-    # pearsonDF = pd.DataFrame.from_dict(pearsonCorDict, orient='index')
-    # pearsonDF.columns = ['similarityIndex']
-    # pearsonDF['userId'] = pearsonDF.index
-    # pearsonDF.index = range(len(pearsonDF))
+    pearsonDF = pd.DataFrame.from_dict(pearsonCorDict, orient='index')
+    pearsonDF.columns = ['similarityIndex']
+    pearsonDF['userId'] = pearsonDF.index
+    pearsonDF.index = range(len(pearsonDF))
     
     # print(pearsonDF.head())
 
-    # topUsers = pearsonDF.sort_values(by='similarityIndex', ascending=False)[0:50]
+    topUsers = pearsonDF.sort_values(by='similarityIndex', ascending=False)[0:50]
     # print(topUsers.head())
     
-    # #rating of selected users to all movies
-    # topUsersRating = topUsers.merge(rating_DF, left_on='userId', right_on='userId', how='inner')
+    #rating of selected users to all movies
+    topUsersRating = topUsers.merge(rating_DF, left_on='userId', right_on='userId', how='inner')
+    print(topUsersRating[0:12])
+
+    # #multiplies the similarity by the user's ratings
+    topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['ratingScore']
     # print(topUsersRating[0:12])
 
-    # # #multiplies the similarity by the user's ratings
-    # topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['ratingScore']
-    # print(topUsersRating[0:12])
-
-    # # #Applies a sum to the topUsers after grouping it up by userId
-    # tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex','weightedRating']]
-    # tempTopUsersRating.columns = ['sum_similarityIndex','sum_weightedRating']
+    # #Applies a sum to the topUsers after grouping it up by userId
+    tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex','weightedRating']]
+    tempTopUsersRating.columns = ['sum_similarityIndex','sum_weightedRating']
     # print(tempTopUsersRating.head())
 
-    # # #Creates an empty dataframe
-    # recommendation_df = pd.DataFrame()
-    # #Now we take the weighted average
-    # recommendation_df['weighted average recommendation score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
-    # recommendation_df['movieId'] = tempTopUsersRating.index
-    # print(recommendation_df)
+    # #Creates an empty dataframe
+    recommendation_df = pd.DataFrame()
 
-    # recommendation_df = recommendation_df.sort_values(by='weighted average recommendation score', ascending=False)
-    # print(recommendation_df)
+    #Now we take the weighted average
+    recommendation_df['w.avg_score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
+    recommendation_df['movieId'] = tempTopUsersRating.index
+    recommendation_df['w.avg_score'] = recommendation_df['w.avg_score'].astype(int)
     
+    recommendation_df = recommendation_df.sort_values(by='w.avg_score', ascending=False)
+    recommendation_df = recommendation_df.drop('movieId',1)
+    print(recommendation_df)
+    
+    final = pd.merge(recommendation_df, movie_DF, on='movieId')
+    
+    final =  final[final['w.avg_score']>=4]
+    print(final)
+
+    CF_List.objects.filter(user_id=user).delete()
+    print('Old CF deleted')
+
+    for ind in final.index:
+        print(final['w.avg_score'][ind], final['movieName'][ind], final['movie_image_url'][ind])
+        t = CF_List(user_id=user, movie_id=final['movieId'][ind], weighted_score=final['w.avg_score'][ind], movie_name=final['movieName'][ind], movie_image_url=final['movie_image_url'][ind])
+        t.save()
+
+
 
 
 
@@ -154,8 +192,8 @@ def movie_rating(request):
 
 
 def home(request):
-    movie_rating(request)
     movies = MovieList.objects.all()
+    cf_list = CF_List.objects.all()
 
     if request.method == "POST":
         form = MovieSearchForm(request.POST)
@@ -174,9 +212,10 @@ def home(request):
     else:
         form = MovieSearchForm()
         movielist_form = MovieList()
-    return render(request, "main/home.html", {"movielist": movies,"form":form})
+    return render(request, "main/home.html", {"movielist": movies,"form":form, "cflist":cf_list})
 
 def rating(request, id):    
+    
     user = request.user
     movie = MovieList.objects.get(id=id)
     genres = movie.movie_genre
@@ -204,6 +243,7 @@ def rating(request, id):
                 if a == "Rate":
                     s = request.POST['rating_score']
                     p = 2
+                    movie_rating(request, id, user, s)
 
                 else:
                     s = None

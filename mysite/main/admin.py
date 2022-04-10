@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import MovieList
 from import_export.admin import ImportExportActionModelAdmin
-from .models import MovieList, RatingList, PrizeList, Reward_Point
+from .models import MovieList, RatingList, PrizeList, Reward_Point, CF_List
 
 # Register your models here.
 @admin.register(MovieList)
@@ -19,3 +19,7 @@ class RatingListAdmin(ImportExportActionModelAdmin):
 @admin.register(Reward_Point)
 class RatingListAdmin(ImportExportActionModelAdmin):
     list_display = ('user_id', 'point', 'date_modified', 'redeem_item_id')
+
+@admin.register(CF_List)
+class RatingListAdmin(ImportExportActionModelAdmin):
+    list_display = ('user_id', 'weighted_score', 'movie_id', 'movie_name', 'movie_image_url')

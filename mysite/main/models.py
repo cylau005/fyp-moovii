@@ -35,3 +35,10 @@ class Reward_Point(models.Model):
     date_modified = models.DateField(auto_now_add=True)
     redeem_item_id = models.IntegerField(default=None, blank=True, null=True)
     code = models.CharField(max_length=50,default=None, blank=True, null=True)
+
+class CF_List(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    weighted_score = models.IntegerField(default=None, blank=True, null=True)
+    movie_id = models.IntegerField(default=None, blank=True, null=True)
+    movie_name = models.CharField(max_length=100, blank=True)
+    movie_image_url = models.CharField(max_length=255, default=None, blank=True, null=True)
