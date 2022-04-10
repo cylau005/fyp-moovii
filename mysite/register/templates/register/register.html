@@ -57,13 +57,20 @@ Create An Account
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="genres">Your Birthday (YYYY-MM-DD)</label>
+            {{form.dob}}
+          </div>
+
+          <div class="form-group col-md-6">
             <label for="genres">Favourite Genres</label>
             <select name="genres_chosen" class="form-control" action="">
               {% for genres in split_genre%}
                  <option value="{{genres}}" >{{genres}}</option>
                {% endfor %}
            </select>
+          </div>
         </div>
       
           <br /><br />

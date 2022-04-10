@@ -33,7 +33,8 @@ def register(request):
         
         if form.is_valid():
             username = form.cleaned_data["username"]
-            email = form.cleaned_data["email"]            
+            email = form.cleaned_data["email"]
+            dob = form.cleaned_data["dob"]            
             g = request.POST['genres_chosen']
             paymentRadio = request.POST['paymentRadio'] 
             
@@ -54,7 +55,7 @@ def register(request):
                     user = form.save(commit=False)  
                     user.is_active = False  
                     user.save()
-                    t = Account(user=user, genres=g)
+                    t = Account(user=user, genres=g, dob=dob)
                     t.save()
                     print('account save')   
 

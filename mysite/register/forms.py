@@ -7,6 +7,7 @@ from creditcards.forms import CardNumberField, CardExpiryField, SecurityCodeFiel
 class RegisterForm(UserCreationForm):
     username = forms.CharField()
     email = forms.EmailField()
+    dob = forms.DateField()
     cc_name = forms.CharField(label='Credit Card Name', max_length=40, required=False)
     cc_number = CardNumberField(label='Card Number', required=False)
     cc_expirydate = CardExpiryField(label='Expiration Date', required=False)
@@ -14,5 +15,5 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2","first_name","last_name","cc_number","cc_name","cc_expirydate","cc_cvv"]
+        fields = ["username", "email", "password1", "password2","first_name","last_name","dob","cc_number","cc_name","cc_expirydate","cc_cvv"]
   

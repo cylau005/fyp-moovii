@@ -8,6 +8,7 @@ from creditcards.models import CardNumberField, CardExpiryField, SecurityCodeFie
 # Create your models here.
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    dob = models.DateField(default=None, blank=True, null=True)
     genres = models.CharField(
         max_length=30,
         choices=[('Adventure','Adventure'),
