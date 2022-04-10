@@ -139,26 +139,31 @@ def movie_rating(request, id, user, user_score):
     topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['ratingScore']
     # print(topUsersRating[0:12])
 
+    print(topUsersRating)
     # #Applies a sum to the topUsers after grouping it up by userId
     tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex','weightedRating']]
     tempTopUsersRating.columns = ['sum_similarityIndex','sum_weightedRating']
-    # print(tempTopUsersRating.head())
+    print(tempTopUsersRating.head())
 
     # #Creates an empty dataframe
     recommendation_df = pd.DataFrame()
 
     #Now we take the weighted average
     recommendation_df['w.avg_score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
+    print(1)
     recommendation_df['movieId'] = tempTopUsersRating.index
+    print(2)
+    print(recommendation_df)
+    recommendation_df =  recommendation_df[recommendation_df['w.avg_score']>0]
     recommendation_df['w.avg_score'] = recommendation_df['w.avg_score'].astype(int)
-    
+    print(3)
     recommendation_df = recommendation_df.sort_values(by='w.avg_score', ascending=False)
     recommendation_df = recommendation_df.drop('movieId',1)
     print(recommendation_df)
     
     final = pd.merge(recommendation_df, movie_DF, on='movieId')
     
-    final =  final[final['w.avg_score']>=4]
+    final =  final[final['w.avg_score']>=3]
     print(final)
 
     CF_List.objects.filter(user_id=user).delete()
