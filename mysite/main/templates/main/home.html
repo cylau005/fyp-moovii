@@ -73,14 +73,15 @@ Home
         {% endfor %}
 
         {% for movie in movielist %}
-            {% if 'Animation' in movie.movie_genre and movie.overall_rating == 5 %}
                 <div class="col-md-2">
                     <div class="movie-img">
+                        <a href="/movie_detail/{{movie.movie_id}}">
                         <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
+                        </a>
                         <p>{{movie.movie_name}}</p>
+                        <p>Overall Score: {{movie.overall_rating}}</p>
                     </div>
                 </div>
-            {% endif %}
         {% endfor %}
       </div>
 </div>

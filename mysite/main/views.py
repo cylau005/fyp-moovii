@@ -2,6 +2,7 @@ from urllib import request
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import MovieList, RatingList, Reward_Point, PrizeList, CF_List
+from register.models import Account
 from .resources import MovieListResources, RatingListResources, RewardPointResources, PrizeListResources
 from django.contrib import messages
 from tablib import Dataset
@@ -166,13 +167,25 @@ def movie_rating(request, id, user, user_score):
     final =  final[final['w.avg_score']>=3]
     print(final)
 
+    user_Rating = RatingList.objects.filter(user_id=user)
+    
+    for a in user_Rating:
+        final = final[final['movieId'] != a.movie_id]
+        
+
+
     CF_List.objects.filter(user_id=user).delete()
     print('Old CF deleted')
+
 
     for ind in final.index:
         print(final['w.avg_score'][ind], final['movieName'][ind], final['movie_image_url'][ind])
         t = CF_List(user_id=user, movie_id=final['movieId'][ind], weighted_score=final['w.avg_score'][ind], movie_name=final['movieName'][ind], movie_image_url=final['movie_image_url'][ind])
         t.save()
+
+
+
+    
 
 
 
@@ -197,7 +210,13 @@ def movie_rating(request, id, user, user_score):
 
 
 def home(request):
-    movies = MovieList.objects.all()
+    user = request.user
+    print(user.id)
+    fav_genre = Account.objects.filter(user=user.id)
+    for g in fav_genre:
+        gen=g.genres
+    movies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3)
+
     cf_list = CF_List.objects.all()
 
     if request.method == "POST":
