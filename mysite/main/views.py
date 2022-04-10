@@ -13,6 +13,7 @@ import random
 from django.contrib.auth.models import User
 import datetime
 from numpy import sqrt 
+import math
 # CF
 import pandas as pd
 
@@ -41,10 +42,12 @@ def movie_rating(request):
     print(rating_DF)
     print('Form User Input DF...\n')
     user = [
-        {'movieName': 'Toys (1992)', 'ratingScore':1}, # userId sulaiman.hopkins, movieId 208
-        {'movieName': 'Bedknobs and Broomsticks (1971)', 'ratingScore':5}, # userId sulaiman.hopkins, movieId 102
         {'movieName': 'Total Recall (1990)', 'ratingScore':3}, # userId archie.carver, movieId 253
         {'movieName': 'In & Out (1997)', 'ratingScore':3}, # userId archie.carver, movieId 165
+        {'movieName': 'Toys (1992)', 'ratingScore':1}, # userId sulaiman.hopkins, movieId 208
+        {'movieName': 'Bedknobs and Broomsticks (1971)', 'ratingScore':5}, # userId sulaiman.hopkins, movieId 102
+        {'movieName': 'Star Wars: Episode IV - A New Hope (1977)', 'ratingScore':5}, 
+        {'movieName': 'Scary Movie (2000)', 'ratingScore':4}, 
     ]
     input_DF = pd.DataFrame(user)
 
@@ -123,10 +126,10 @@ def movie_rating(request):
     #Now we take the weighted average
     recommendation_df['weighted average recommendation score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
     recommendation_df['movieId'] = tempTopUsersRating.index
-    print(recommendation_df.head())
+    print(recommendation_df)
 
     recommendation_df = recommendation_df.sort_values(by='weighted average recommendation score', ascending=False)
-    print(recommendation_df.head())
+    print(recommendation_df)
 
 
 
@@ -183,7 +186,6 @@ def rating(request, id):
               'movieyear':datem,
               'moviegenre':genresm,
               }
-    
     today = datetime.date.today()
     
     if 'actiontype' in request.POST:
@@ -209,7 +211,7 @@ def rating(request, id):
                 r = Reward_Point(user_id=user, point=p)
                 t.save()
                 r.save()
-
+                computeAvgRating(request, id)
                 msg = a + ' successfully'
             
             else:
@@ -235,6 +237,15 @@ def rating(request, id):
         return render(request, "main/movie_detail.html", context)
         
     return render(request, "main/movie_detail.html", context)
+
+def computeAvgRating(request, id):
+    rated_movie_sum = RatingList.objects.filter(movie_id=id, action='Rate').aggregate(thedata=Sum('rating_score'))
+    rated_movie_count = RatingList.objects.filter(movie_id=id, action='Rate').count()
+    avg = rated_movie_sum['thedata'] / rated_movie_count
+    roundAvg = int(math.ceil(avg))
+    MovieList.objects.filter(id=id).update(overall_rating=roundAvg)
+    print('Average Updated')
+
 
 # default and profile views
 def aboutus(response):
