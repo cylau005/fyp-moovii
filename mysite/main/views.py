@@ -213,9 +213,13 @@ def home(request):
     user = request.user
     print(user.id)
     fav_genre = Account.objects.filter(user=user.id)
-    for g in fav_genre:
-        gen=g.genres
-    movies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3)
+    print(1)
+    if len(fav_genre) > 0:
+        for g in fav_genre:
+            gen=g.genres
+            movies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3)
+    else:
+        movies = MovieList.objects.all()
 
     cf_list = CF_List.objects.all()
 
