@@ -247,6 +247,7 @@ def rating(request, id):
     user = request.user
     movie = MovieList.objects.get(id=id)
     genres = movie.movie_genre
+    movieID = movie.id
     genresm = genres.replace('|',' | ')
     date = movie.date_release
     datem = date.year
@@ -254,6 +255,7 @@ def rating(request, id):
               'movie': movie,
               'movieyear':datem,
               'moviegenre':genresm,
+              'movieID':movieID,
               }
     today = datetime.date.today()
     
@@ -302,6 +304,7 @@ def rating(request, id):
               'movieyear':datem,
               'moviegenre':genresm,
               'msg':msg,
+              'movieID':movieID
               }
 
         return render(request, "main/movie_detail.html", context)
