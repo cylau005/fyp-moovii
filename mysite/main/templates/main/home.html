@@ -22,7 +22,7 @@ Home
     {% for movie in newmovie %}
                 <div class="col-md-2">
                     <div class="movie-img">
-                        <a href="/movie_detail/{{movie.id}}">
+                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
                         <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                         </a>
                         <p>{{movie.movie_name}}</p>
@@ -38,7 +38,7 @@ Home
         {% for movie in cflist %}
                 <div class="col-md-2">
                     <div class="movie-img">
-                        <a href="/movie_detail/{{movie.movie_id}}">
+                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
                         <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                         </a>
                         <p>{{movie.movie_name}}</p>
@@ -50,7 +50,7 @@ Home
         {% for movie in genmovies %}
                 <div class="col-md-2">
                     <div class="movie-img">
-                        <a href="/movie_detail/{{movie.id}}">
+                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
                         <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                         </a>
                         <p>{{movie.movie_name}}</p>
@@ -68,7 +68,7 @@ Home
         {% if movie.overall_rating >= 5 %}
               <div class="col-md-2">
                   <div class="movie-img">
-                    <a href="/movie_detail/{{movie.id}}">
+                    <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
                       <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                     </a>
                       <p>{{movie.movie_name}}</p>
@@ -88,7 +88,7 @@ Home
           {% if 'Action' in movie.movie_genre and movie.overall_rating == 5 %}
               <div class="col-md-2">
                   <div class="movie-img">
-                    <a href="/movie_detail/{{movie.id}}">
+                    <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
                       <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                     </a>
                       <p>{{movie.movie_name}}</p>
@@ -106,7 +106,7 @@ Home
           {% if 'Comedy' in movie.movie_genre and movie.overall_rating == 5 %}
               <div class="col-md-2">
                   <div class="movie-img">
-                    <a href="/movie_detail/{{movie.id}}">
+                    <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
                       <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                     </a>
                       <p>{{movie.movie_name}}</p>

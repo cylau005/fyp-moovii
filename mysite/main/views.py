@@ -198,7 +198,7 @@ def movie_rating(request, id, user, user_score):
 def home(request):
     newmovies = MovieList.objects.all().order_by('-id')[:6]
     movies = MovieList.objects.filter(overall_rating__gte=5)
-
+    genmovies = None
     if request.user.is_authenticated:
         user = request.user
         fav_genre = Account.objects.filter(user=user.id)
@@ -214,6 +214,7 @@ def home(request):
 
     else:
         cf_list = None
+        
         
         
     if request.method == "POST":
@@ -237,26 +238,38 @@ def home(request):
     return render(request, "main/home.html", {"movielist": movies, "newmovie":newmovies, "genmovies": genmovies, "form":form, "cflist":cf_list})
 
 def rating(request, id):    
-    
-    user = request.user
+
     movie = MovieList.objects.get(id=id)
-    cflist = CF_List.objects.filter(user_id=user.id, movie_id=id)
-    
-    for i in cflist:
-        cf_score = i.weighted_score
-    
     genres = movie.movie_genre
     movieID = movie.id
     genresm = genres.replace('|',' | ')
     date = movie.date_release
     datem = date.year
-    context= {
-              'movie': movie,
-              'movieyear':datem,
-              'moviegenre':genresm,
-              'movieID':movieID,
-              'cf_score':cf_score,
-              }
+    
+    if request.user.is_authenticated:
+        user = request.user
+        cflist = CF_List.objects.filter(user_id=user.id, movie_id=id)
+        
+        if not len(cflist):
+            print('No cf')
+            cf_score = 'No predicted'
+        else:
+            for i in cflist:
+                cf_score = i.weighted_score
+        
+        
+        context= {
+                'movie': movie,
+                'movieyear':datem,
+                'moviegenre':genresm,
+                'movieID':movieID,
+                'cf_score':cf_score,
+                }
+        
+    
+    
+    
+    
     today = datetime.date.today()
     
     if 'actiontype' in request.POST:
