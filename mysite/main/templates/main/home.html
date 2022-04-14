@@ -16,47 +16,22 @@ Home
 </div>
 <br/>
 
-{% if request.user.is_authenticated %}
+
 <h2>Upcoming Movies</h2><br/>
 <div class="row">
-    <div class="col-md-2">
-        <div class="movie-img">
-            <a href="/movie_detail">
-                <img src="https://cdn.moviefone.com/admin-uploads/posters/morbius-movie-poster_1638710998.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
-            </a>
-            <p>Morbius</p>
-        </div>
-    </div>
-
-    <div class="col-md-2">
-        <div class="movie-img">
-            <img src="https://cdn.moviefone.com/admin-uploads/posters/sonic2-movie-poster_1638995220.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
-            <p>Sonic The Hedgehog 2</p>
-        </div>
-    </div>
-
-    <div class="col-md-2">
-        <div class="movie-img">
-            <img src="https://cdn.moviefone.com/admin-uploads/posters/thesecretsofdumbledoreposter_1646063833.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
-            <p>Fantastic Beast: The Secrets of Dumbledore</p>
-        </div>
-    </div>
-
-    <div class="col-md-2">
-        <div class="movie-img">
-            <img src="https://cdn.moviefone.com/admin-uploads/posters/thelostcityposter_1644600130.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
-            <p>The Lost City</p>
-        </div>
-    </div>
-
-    <div class="col-md-2">
-        <div class="movie-img">
-            <img src="https://cdn.moviefone.com/image-assets/438148/wKiOkZTN9lUUUNZLmtnwubZYONg.jpg?d=360x540&q=60" alt="" width="90%" height="90%"  />
-            <p>Minions: The Rise of Gru</p>
-        </div>
-    </div>
+    {% for movie in newmovie %}
+                <div class="col-md-2">
+                    <div class="movie-img">
+                        <a href="/movie_detail/{{movie.id}}">
+                        <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
+                        </a>
+                        <p>{{movie.movie_name}}</p>
+                    </div>
+                </div>
+        {% endfor %}
 </div>
 
+{% if request.user.is_authenticated %}
 <h2>Recommended for You</h2>
 <div class="movie-detail">
     <div class="row">
@@ -72,10 +47,10 @@ Home
                 </div>
         {% endfor %}
 
-        {% for movie in movielist %}
+        {% for movie in genmovies %}
                 <div class="col-md-2">
                     <div class="movie-img">
-                        <a href="/movie_detail/{{movie.movie_id}}">
+                        <a href="/movie_detail/{{movie.id}}">
                         <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                         </a>
                         <p>{{movie.movie_name}}</p>
@@ -90,7 +65,7 @@ Home
 <div class="movie-detail">
     <div class="row">
       {% for movie in movielist %}
-        {% if movie.overall_rating == 5 %}
+        {% if movie.overall_rating >= 5 %}
               <div class="col-md-2">
                   <div class="movie-img">
                     <a href="/movie_detail/{{movie.id}}">
@@ -109,7 +84,7 @@ Home
 <h2>Action</h2><br/>
 <div class="movie-detail">
     <div class="row">
-      {% for movie in movielist %}
+      {% for movie in movielist|slice:":32" %}
           {% if 'Action' in movie.movie_genre and movie.overall_rating == 5 %}
               <div class="col-md-2">
                   <div class="movie-img">
@@ -127,7 +102,7 @@ Home
 <h2>Comedy</h2><br/>
 <div class="movie-detail">
     <div class="row">
-      {% for movie in movielist|slice:":10" %}
+      {% for movie in movielist|slice:":13" %}
           {% if 'Comedy' in movie.movie_genre and movie.overall_rating == 5 %}
               <div class="col-md-2">
                   <div class="movie-img">

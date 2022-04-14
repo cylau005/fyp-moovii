@@ -182,6 +182,8 @@ def movie_rating(request, id, user, user_score):
         print(final['w.avg_score'][ind], final['movieName'][ind], final['movie_image_url'][ind])
         t = CF_List(user_id=user, movie_id=final['movieId'][ind], weighted_score=final['w.avg_score'][ind], movie_name=final['movieName'][ind], movie_image_url=final['movie_image_url'][ind])
         t.save()
+    
+
 
 
 
@@ -193,36 +195,27 @@ def movie_rating(request, id, user, user_score):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def home(request):
-    user = request.user
-    print(user.id)
-    fav_genre = Account.objects.filter(user=user.id)
-    print(1)
-    if len(fav_genre) > 0:
-        for g in fav_genre:
-            gen=g.genres
-            movies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3)
+    newmovies = MovieList.objects.all().order_by('-id')[:6]
+    movies = MovieList.objects.filter(overall_rating__gte=5)
+
+    if request.user.is_authenticated:
+        user = request.user
+        fav_genre = Account.objects.filter(user=user.id)
+    
+        if len(fav_genre) > 0:
+            for g in fav_genre:
+                gen=g.genres
+                genmovies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3)[:6]
+        else:
+            movies = MovieList.objects.all()[:6]
+
+        cf_list = CF_List.objects.all()[:12]  
+
     else:
-        movies = MovieList.objects.all()
-
-    cf_list = CF_List.objects.all()
-
+        cf_list = None
+        
+        
     if request.method == "POST":
         form = MovieSearchForm(request.POST)
         if form.is_valid():
@@ -235,17 +228,23 @@ def home(request):
             else:
                 movies = MovieList.objects.filter(movie_name__icontains=movies_search)
                 msg = 'Please refer below'        
-        return render(request, "main/home.html", {"movielist": movies,"form":form, "msg":msg})
+        return render(request, "main/home.html", {"movielist": movies, "newmovie":newmovies, "genmovies": genmovies, "form":form, "msg":msg})
 
     else:
         form = MovieSearchForm()
         movielist_form = MovieList()
-    return render(request, "main/home.html", {"movielist": movies,"form":form, "cflist":cf_list})
+    
+    return render(request, "main/home.html", {"movielist": movies, "newmovie":newmovies, "genmovies": genmovies, "form":form, "cflist":cf_list})
 
 def rating(request, id):    
     
     user = request.user
     movie = MovieList.objects.get(id=id)
+    cflist = CF_List.objects.filter(user_id=user.id, movie_id=id)
+    
+    for i in cflist:
+        cf_score = i.weighted_score
+    
     genres = movie.movie_genre
     movieID = movie.id
     genresm = genres.replace('|',' | ')
@@ -256,6 +255,7 @@ def rating(request, id):
               'movieyear':datem,
               'moviegenre':genresm,
               'movieID':movieID,
+              'cf_score':cf_score,
               }
     today = datetime.date.today()
     
@@ -304,7 +304,8 @@ def rating(request, id):
               'movieyear':datem,
               'moviegenre':genresm,
               'msg':msg,
-              'movieID':movieID
+              'movieID':movieID,
+              'cflist':cflist,
               }
 
         return render(request, "main/movie_detail.html", context)
