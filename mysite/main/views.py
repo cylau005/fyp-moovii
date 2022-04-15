@@ -184,17 +184,6 @@ def movie_rating(request, id, user, user_score):
         t.save()
     
 
-
-
-
-    
-
-
-
-
-
-
-
 def home(request):
     newmovies = MovieList.objects.all().order_by('-id')[:6]
     movies = MovieList.objects.filter(overall_rating__gte=5)
@@ -264,11 +253,7 @@ def rating(request, id):
                 'moviegenre':genresm,
                 'movieID':movieID,
                 'cf_score':cf_score,
-                }
-        
-    
-    
-    
+                } 
     
     today = datetime.date.today()
     
