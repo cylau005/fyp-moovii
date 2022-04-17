@@ -45,17 +45,6 @@
                 float: right;
                 font-size: 20px;
             }
-/* 
-            .bg-image {
-                background-image: url(https://wallpaper.dog/large/20355534.jpg);
-                background-position: bottom;
-                background-repeat: no-repeat;
-                background-size: cover;
-                background-attachment: fixed;
-                height: 500vh;
-                width: 100%;
-                
-            } */
 
             .bg-text {
                 color: Black;
@@ -87,7 +76,6 @@
                 width: 32px;
                 text-align: center;
                 text-decoration: none;
-                /* height:10px; */
             }
 
             .fa:hover {
@@ -125,7 +113,6 @@
                 {% if request.user.is_authenticated %}
                     <li><a href="/profile">Profile</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
-                    <!-- <li><a href="/movie_detail">MovieDetailPageForTest</a></li> -->                    
                     
                     <span>Welcome <b>{{ user }}</b></span>
                 {% else %}
@@ -141,7 +128,7 @@
             </ul>
         </div>
         <div style="background-color:#888; color:white;">
-            <i style="margin-left: 30%;"> &nbsp;Join us and do the rating to individual video. Earn point and get attractive prizes</i>
+            <i style="margin-left: 30%;"> &nbsp;Join us and do the rating to individual movie. Earn point and get attractive prizes</i>
         </div>
 
 
@@ -154,16 +141,6 @@
             {% endblock %}
             <br />
         </div>
-        <!-- <div id="content", name="content", class="main">
-            <div class="row justify-content-center">
-                <div class="col-8">
-                    <h1 class="mt-2">MooVii</h1>
-                    <hr class="mt-0 mb-4"> -->
-
-                    
-                <!-- </div>
-            </div>
-        </div> -->
         <div class="footer">
             
             Copyright © 2022 All rights reserved 

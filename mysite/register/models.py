@@ -6,6 +6,9 @@ from django.utils import timezone
 from creditcards.models import CardNumberField, CardExpiryField, SecurityCodeField
 
 # Create your models here.
+
+# Model to keep favourite genre and DOB
+# Genre default as below choices list, but will be overwritten by the Genres from MovieList model
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     dob = models.DateField(default=None, blank=True, null=True)
@@ -34,6 +37,7 @@ class Account(models.Model):
         return self.user.username
 
 
+# Model to keep credit card subscription
 class CreditCard(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     cc_number = CardNumberField('card number')
@@ -45,6 +49,7 @@ class CreditCard(models.Model):
     def __str__(self):
         return self.user.username
 
+# Model to keep bank in payment subscription
 class BankIn(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     subscription_enddate = models.DateTimeField(default=timezone.now()+timedelta(days=30))

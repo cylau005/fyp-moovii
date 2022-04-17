@@ -6,6 +6,7 @@ import schedule
 from bs4 import BeautifulSoup
 from requests import get
 
+# Connect to postgreSQL
 conn = psycopg2.connect(
     host="ec2-54-209-221-231.compute-1.amazonaws.com",
     database="d45ml82v09ghlu",
@@ -66,15 +67,20 @@ image=html_soup.find_all('img', class_ = 'poster shadowed')
 for actual_image in image:
     imageArray.append(actual_image['src'])
 
-
+# Generate insert statement
 postgres_insert_query = "INSERT INTO main_movielist(date_release,id,movie_genre,movie_image_url,movie_name) VALUES (%s,%s,%s,%s,%s);"
 b = 0
 
 d = datetime.date.today()+ datetime.timedelta(days=30)
 
+# Loop all crawled movie
 while b < len(movieArray):
+
+    # If movie found in master list, print message
     if movieArray[b] in allMovieArray:
         print('Movie exists')
+    
+    # Else, perform Insert statement
     else:
         print(movieArray[b])
         print('Inserting')
@@ -88,5 +94,5 @@ while b < len(movieArray):
 
 print('Done')
 
-
+# Close connection
 cur.close()

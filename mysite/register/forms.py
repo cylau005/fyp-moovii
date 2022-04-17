@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from creditcards.forms import CardNumberField, CardExpiryField, SecurityCodeField
 
+# Form for registration
+# Credit card validation available
 class RegisterForm(UserCreationForm):
     username = forms.CharField()
     email = forms.EmailField()
