@@ -1,31 +1,30 @@
 from urllib import request
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from .models import MovieList, RatingList, Reward_Point, PrizeList, CF_List
-from register.models import Account
-from .resources import MovieListResources, RatingListResources, RewardPointResources, PrizeListResources
 from django.contrib import messages
-from tablib import Dataset
 from django.db.models import Sum
-from django.views.generic.list import ListView
+from django.contrib.auth.models import User
+from .models import MovieList, RatingList, Reward_Point, PrizeList, CF_List
+from .resources import MovieListResources, RatingListResources, RewardPointResources, PrizeListResources
 from .forms import RatingForm, AddMovieForm, AddRatingForm, DeleteRatingForm, MovieSearchForm, UserSearchForm, DeleteMovieForm
+from register.models import Account
+from tablib import Dataset
 import string    
 import random 
-from django.contrib.auth.models import User
 import datetime
 from numpy import sqrt 
 import math
-# CF
 import pandas as pd
 
-# for CF related views
-def movie_rating(request, id, user, user_score):  
-    # print('a')
+# CF Approach - Pearson Correlation
+def cf_approach(request, id, user, user_score):  
+    
+    # Get all the movie
     movies = MovieList.objects.all()
+
+    # Get all the rating related Rate action
     ratinglists = RatingList.objects.filter(action='Rate')
 
-    print('Form Movie DF\n')
-    # movie data frame
+    # Form master movie list dataframe
     m=[]
     mlist=[]
     for mv in movies:
@@ -33,36 +32,28 @@ def movie_rating(request, id, user, user_score):
         mlist+=[m]
     movie_DF = pd.DataFrame(mlist, columns=['movieId', 'movieName', 'movie_image_url'])
 
-    print('Form Rating DF...\n')
-    # rating data frame
+    # Form rating list dataframe
     r=[]
     rlist=[]
     for rating in ratinglists:
         r=[rating.user_id.id, rating.movie_id, rating.rating_score]
         rlist+=[r]
     rating_DF = pd.DataFrame(rlist, columns=['userId', 'movieId', 'ratingScore'])
-    print(rating_DF)
-
+    
+    # Get movieID and movieName based on user rated
     chosen_MovieName = MovieList.objects.get(id=id)
     chosen_MovieName = chosen_MovieName.movie_name
-    print(chosen_MovieName)
-    
-    print('Form User Input DF...\n')
+
+    # Form dataframe based on what user has rated
     user_rating = [
-        {'movieName': chosen_MovieName, 'ratingScore': int(user_score)}, # userId archie.carver, movieId 253
-        # {'movieName': 'Braveheart (1995)', 'ratingScore': 5}, # userId archie.carver, movieId 253
-        # {'movieName': 'In & Out (1997)', 'ratingScore':3}, # userId archie.carver, movieId 165
-        # {'movieName': 'Toys (1992)', 'ratingScore':1}, # userId sulaiman.hopkins, movieId 208
-        # {'movieName': 'Bedknobs and Broomsticks (1971)', 'ratingScore':5}, # userId sulaiman.hopkins, movieId 102
-        # {'movieName': 'Star Wars: Episode IV - A New Hope (1977)', 'ratingScore':5}, 
-        # {'movieName': 'Scary Movie (2000)', 'ratingScore':4}, 
+        {'movieName': chosen_MovieName, 'ratingScore': int(user_score)}, 
     ]
     input_DF = pd.DataFrame(user_rating)
-    print(input_DF)
     
-    # Finding existing rating for current user
-    user_Rating = RatingList.objects.filter(user_id=user)
-    # chosen_MovieName = MovieList.objects.get(id=user_Rating.movie_id)
+    # Finding all the movies has rated by the user
+    user_Rating = RatingList.objects.filter(user_id=user, action='Rate')
+    
+    # Append all the movies has rated by the user into dataframe
     for movie in user_Rating:
         print(movie.movie_id)
         movieName = MovieList.objects.get(id=movie.movie_id)
@@ -72,140 +63,144 @@ def movie_rating(request, id, user, user_score):
         })
         input_DF = input_DF.append(temp)
 
-    print(input_DF)
-
-
+    # Filter the master movie list based on user's rated movies. and Merge the table together
     ID = movie_DF[movie_DF['movieName'].isin(input_DF['movieName'].tolist())]
     input_DF = pd.merge(ID, input_DF)
 
-    print('Find movie name and id for Input DF...\n')
+    print('Merged movie list.\n')
     print(input_DF)
-    print()
 
-    print('Find user who done rating on same movie...\n')
+    # Find all users who done rating on same movie
     users = rating_DF[rating_DF['movieId'].isin(input_DF['movieId'].tolist())]
     print(users)
     
-    print(users.shape)
-    print()
-
+    # Group by to userId avoid duplicate
     userSubsetGroup = users.groupby(['userId'])
 
-    print('Done GroupBy')
-    
+    # Sort the user based on most common movie
     userSubsetGroup = sorted(userSubsetGroup, key=lambda x:len(x[1]), reverse=True)    
-    
-    print('Done Sorted')
     print(userSubsetGroup)
 
-    #Person correlation, where key is the user id and value is the coefficient
-    pearsonCorDict = {}
+    # Pearson correlation approach
+    PCDict = {}
     
     for name, group in userSubsetGroup:
         group = group.sort_values(by='movieId')
         input_DF = input_DF.sort_values(by='movieId')
         n = len(group)
         temp = input_DF[input_DF['movieId'].isin(group['movieId'].tolist())]
-        tempRatingList = temp['ratingScore'].tolist()
+        tempInputDFList = temp['ratingScore'].tolist()
         tempGroupList = group['ratingScore'].tolist()
         
-        #calculating person correlation between two users, so called x and y
-        Sxx = sum([i**2 for i in tempRatingList]) - pow(sum(tempRatingList),2)/float(n)
-        Syy = sum([i**2 for i in tempGroupList]) - pow(sum(tempGroupList),2)/float(n)
-        Sxy = sum( i*j for i, j in zip(tempRatingList, tempGroupList)) - sum(tempRatingList)*sum(tempGroupList)/float(n)
+        # Calculating pearson correlation between two users, so called userX and userY
+        userX = sum([i**2 for i in tempInputDFList]) - pow(sum(tempInputDFList), 2) / float(n)
+        userY = sum([i**2 for i in tempGroupList]) - pow(sum(tempGroupList), 2) / float(n)
+        userXY = sum( i*j for i, j in zip(tempInputDFList, tempGroupList)) - sum(tempInputDFList) * sum(tempGroupList) / float(n)
         
-        if Sxx != 0 and Syy != 0:
-            pearsonCorDict[name] = Sxy/sqrt(Sxx*Syy)
+        # Avoid 0
+        if userX != 0 and userY != 0:
+            PCDict[name] = userXY / sqrt(userX * userY)
         else:
-            pearsonCorDict[name] = 0
-        
-        print(pearsonCorDict.items())
+            PCDict[name] = 0
     
+    pearsonDF = pd.DataFrame.from_dict(PCDict, orient='index')
 
-    pearsonDF = pd.DataFrame.from_dict(pearsonCorDict, orient='index')
+    # Forming similarity index
     pearsonDF.columns = ['similarityIndex']
     pearsonDF['userId'] = pearsonDF.index
     pearsonDF.index = range(len(pearsonDF))
     
-    # print(pearsonDF.head())
-
     topUsers = pearsonDF.sort_values(by='similarityIndex', ascending=False)[0:50]
-    # print(topUsers.head())
     
-    #rating of selected users to all movies
+    # Merging the table between all top user and master rating list by inner join
     topUsersRating = topUsers.merge(rating_DF, left_on='userId', right_on='userId', how='inner')
     print(topUsersRating[0:12])
 
-    # #multiplies the similarity by the user's ratings
+    # Calculate similarity index
     topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['ratingScore']
-    # print(topUsersRating[0:12])
-
+    print('Top User Rating:')
     print(topUsersRating)
-    # #Applies a sum to the topUsers after grouping it up by userId
+
+    # Sum similarityIndex and WeightedRating
     tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex','weightedRating']]
     tempTopUsersRating.columns = ['sum_similarityIndex','sum_weightedRating']
     print(tempTopUsersRating.head())
 
-    # #Creates an empty dataframe
+    # Creates new dataframe
     recommendation_df = pd.DataFrame()
 
-    #Now we take the weighted average
+    # Compute weighted average score
     recommendation_df['w.avg_score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
-    print(1)
     recommendation_df['movieId'] = tempTopUsersRating.index
-    print(2)
-    print(recommendation_df)
+    
+    # Filter weighted average score greater than 0 and make it integer
     recommendation_df =  recommendation_df[recommendation_df['w.avg_score']>0]
     recommendation_df['w.avg_score'] = recommendation_df['w.avg_score'].astype(int)
-    print(3)
     recommendation_df = recommendation_df.sort_values(by='w.avg_score', ascending=False)
     recommendation_df = recommendation_df.drop('movieId',1)
     print(recommendation_df)
     
+    # Merged recommendation dataframe and master movie list to get neccessary data
     final = pd.merge(recommendation_df, movie_DF, on='movieId')
     
+    # Only recommend the movie if weighed average score is equal or greater than 3
     final =  final[final['w.avg_score']>=3]
-    print(final)
 
-    user_Rating = RatingList.objects.filter(user_id=user)
+    # Get all the rating done by the user
+    user_Rating = RatingList.objects.filter(user_id=user, action='Rate')
     
+    # Filter rated movie from the final dataframe so it won't recommend same movie to user
     for a in user_Rating:
         final = final[final['movieId'] != a.movie_id]
-        
 
-
+    # Remove rated movie from the final dataframe so it won't recommend same movie to user
     CF_List.objects.filter(user_id=user).delete()
     print('Old CF deleted')
 
-
+    # Save final recommended movie list into CF_List model
     for ind in final.index:
         print(final['w.avg_score'][ind], final['movieName'][ind], final['movie_image_url'][ind])
         t = CF_List(user_id=user, movie_id=final['movieId'][ind], weighted_score=final['w.avg_score'][ind], movie_name=final['movieName'][ind], movie_image_url=final['movie_image_url'][ind])
         t.save()
     
-
+# Function for homepage
 def home(request):
+    # Get top 6 new movies
     newmovies = MovieList.objects.all().order_by('-id')[:6]
+
+    # Get movie which has max rating
     movies = MovieList.objects.filter(overall_rating__gte=5)
+    
+    # Custom variable
     genmovies = None
+    msg = ''
+
+    # If is registered viewer
     if request.user.is_authenticated:
+
+        # Get register viewer's favourite genre
         user = request.user
         fav_genre = Account.objects.filter(user=user.id)
-    
+
+        # If favourite genre found, filter 6 movies that related to the genre 
+        # and overall rating is equal or greater than 3
         if len(fav_genre) > 0:
             for g in fav_genre:
                 gen=g.genres
                 genmovies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3)[:6]
+        
+        # Else, get random 6 movies
         else:
             movies = MovieList.objects.all()[:6]
 
+        # Get 12 movies from CF List
         cf_list = CF_List.objects.all()[:12]  
 
+    # Else, no CF List
     else:
         cf_list = None
-        
-        
-        
+    
+    # Movie search function
     if request.method == "POST":
         form = MovieSearchForm(request.POST)
         if form.is_valid():
@@ -218,61 +213,74 @@ def home(request):
             else:
                 movies = MovieList.objects.filter(movie_name__icontains=movies_search)
                 msg = 'Please refer below'        
-        return render(request, "main/home.html", {"movielist": movies, "newmovie":newmovies, "genmovies": genmovies, "form":form, "msg":msg})
 
     else:
         form = MovieSearchForm()
         movielist_form = MovieList()
     
-    return render(request, "main/home.html", {"movielist": movies, "newmovie":newmovies, "genmovies": genmovies, "form":form, "cflist":cf_list})
+    context = {"movielist": movies, 
+                "newmovie":newmovies, 
+                "genmovies": genmovies, 
+                "form":form, 
+                "cflist":cf_list, 
+                "msg":msg
+    }
 
+    return render(request, "main/home.html", context)
+
+# Function for Rating 
 def rating(request, id):    
 
+    # Get movie detail for the selected movie
     movie = MovieList.objects.get(id=id)
     genres = movie.movie_genre
     movieID = movie.id
     genresm = genres.replace('|',' | ')
     date = movie.date_release
     datem = date.year
-    
+    cf_score = ''
+    cflist = ''
+    msg = ''
+    today = datetime.date.today()
+
+    # If user is a registered viewer, get the predicted rating for that user and movie if available
     if request.user.is_authenticated:
         user = request.user
         cflist = CF_List.objects.filter(user_id=user.id, movie_id=id)
         
         if not len(cflist):
-            print('No cf')
             cf_score = 'No predicted'
         else:
-            for i in cflist:
-                cf_score = i.weighted_score
+            cf_score = cflist.values_list('weighted_score', flat=True)[0]
+            print(cf_score)
         
-        
-        context= {
-                'movie': movie,
-                'movieyear':datem,
-                'moviegenre':genresm,
-                'movieID':movieID,
-                'cf_score':cf_score,
-                } 
-    
-    today = datetime.date.today()
-    
+    # Rating form
     if 'actiontype' in request.POST:
         m = id
         a = request.POST['actiontype']
 
+        # Get number of rating or sharing done by the user to particular movie
         rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a)
         num_rated_movie = len(rated_movie)
 
-        if num_rated_movie < 1:                
+        # If no record found, add new record
+        if num_rated_movie < 1:             
+
+            # Check how many rating or sharing done by the user on the same day   
             todayRateCount = RatingList.objects.filter(user_id=user, date_rating=today, action=a).count()
 
+            # If less than 5 time, add new record
             if todayRateCount < 5:
+
+                # If is rating, earn 2 reward point
                 if a == "Rate":
                     s = request.POST['rating_score']
                     p = 2
-                    movie_rating(request, id, user, s)
 
+                    # Compute new CF list
+                    cf_approach(request, id, user, s)
+
+                # If is sharing, earn 3 reward point
                 else:
                     s = None
                     p = 3
@@ -281,12 +289,16 @@ def rating(request, id):
                 r = Reward_Point(user_id=user, point=p)
                 t.save()
                 r.save()
+
+                # Compute average score for the movie
                 computeAvgRating(request, id)
                 msg = a + ' successfully'
             
+            # Else, print error message
             else:
                 msg = "You reached today limit, please try again tomorrow"
         
+        # Else, update record, and no new reward point earn
         else:
             if a == "Rate":
                 s = request.POST['rating_score']
@@ -295,80 +307,374 @@ def rating(request, id):
             else:
                 rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a).update(date_rating=today)
                 msg = a + ' successfully'
-                    
 
-        context= {
-              'movie': movie,
-              'movieyear':datem,
-              'moviegenre':genresm,
-              'msg':msg,
-              'movieID':movieID,
-              'cflist':cflist,
-              }
-
-        return render(request, "main/movie_detail.html", context)
+    context= {
+            'movie': movie,
+            'movieyear':datem,
+            'moviegenre':genresm,
+            'msg':msg,
+            'movieID':movieID,
+            'cflist':cflist,
+            'cf_score':cf_score,
+            }
         
     return render(request, "main/movie_detail.html", context)
 
+# Compute average score for the movie
 def computeAvgRating(request, id):
+    
+    # Sum all the rating from the RatingList model for particular movie
     rated_movie_sum = RatingList.objects.filter(movie_id=id, action='Rate').aggregate(thedata=Sum('rating_score'))
+
+    # Count number of record all the rating from the RatingList model for particular movie
     rated_movie_count = RatingList.objects.filter(movie_id=id, action='Rate').count()
+
+    # Count average
     avg = rated_movie_sum['thedata'] / rated_movie_count
+
+    # Round up
     roundAvg = int(math.ceil(avg))
+
+    # Update model
     MovieList.objects.filter(id=id).update(overall_rating=roundAvg)
     print('Average Updated')
 
 
-# default and profile views
+# Function for About Us page
 def aboutus(response):
     return render(response, "main/aboutus.html", {})
 
+# Function for Profile page
 def profile(response):
+    
+    # Find the userID and sum all the reward point available for the user
     user = response.user
     data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
-    prize = PrizeList.objects.all()
-    reward = Reward_Point.objects.filter(user_id=user).order_by('-date_modified')
-    prizeItem = PrizeList.objects.all()
 
+    # Get all prizes
+    prize = PrizeList.objects.all()
+
+    # Get all reward point history
+    reward = Reward_Point.objects.filter(user_id=user).order_by('-date_modified')
+    
+    # Custom variable
+    msg = ''
+
+    # Form for prize redeem
     if 'prize_chosen' in response.POST:
         
         item = response.POST['prize_chosen']
         point = data['thedata']
         msg = ""
+        
+        # Get required point for the selected prize
+        chosenPrizeID = PrizeList.objects.get(pk=item)
+        rp_PrizeItem = PrizeList.objects.filter(pk=item).values_list('require_points', flat=True)[0]
+        
+        # If available point for user and available point is greater than prize's required point
+        if point is not None and point >= rp_PrizeItem:    
+            
+            # Redeem prize and deduct point
+            point = 0-rp_PrizeItem
 
-        if point is not None and point >= 1:    
-            point = 0-1
+            # Generate redemption code with a prefix and 30 digits random alphanumeric
             S = 30
             ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
             
+            # If is Movie Voucher
             if item == '1':
                 ran = 'MV-'+ran
                 msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
-                
+            
+            # If is Cinema Food Voucher
             if item == '2':
                 ran = 'FD-'+ran
                 msg = 'Please do a screenshot and present it to the staff  \n\n' + ran
                 
+            # If is one month subscription
             if item == '3':
                 ran = 'One month subscription'
                 msg = 'We will extend your subscription for one month'
-                
-            r = Reward_Point(user_id=user, point=point, redeem_item_id=item, code = ran)
+            
+            r = Reward_Point(user_id=user, point=point, redeem_item_id=chosenPrizeID, code = ran)
             r.save()
             data = Reward_Point.objects.filter(user_id=user).aggregate(thedata=Sum('point'))
         
+        # Else, if not enough point, print message
         else:
             msg = 'You do not have enough point'
-
-        
-        return render(response, "main/profile.html", {"data":data, "prize":prize, "prizeItem":prizeItem, "msg":msg, "reward":reward})
         
     else:
         error = "something wrong"
 
-    return render(response, "main/profile.html", {"data":data, "prize":prize, "prizeItem":prizeItem, "reward":reward})
+    context = {"data":data, 
+                "prize":prize,  
+                "reward":reward,
+                "msg": msg
+    }
 
-# admin views
+    return render(response, "main/profile.html", context)
+
+
+# Function for MovieList(Admin) page
+def movieListing(request): 
+
+    # Get all movie and sort descending
+    movies = MovieList.objects.all().order_by('-id')
+    msg = ''
+
+    # Search movie
+    if request.method == "POST":
+        form = MovieSearchForm(request.POST)
+        if form.is_valid():
+            movies_search = form.cleaned_data["movie_name"]
+            movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search)
+            
+            if not movies_search_done:
+                msg = 'No movie found'
+                print(msg)
+            else:
+                movies = MovieList.objects.filter(movie_name__icontains=movies_search)
+                msg = 'Please refer below'
+
+    else:
+        form = MovieSearchForm()
+        movielist_form = MovieList()
+
+    context = {"movielist": movies,
+                "form":form,
+                "msg":msg
+    }
+        
+    return render(request, "main/movie_listing.html", context)
+
+# Function for admin to add movie manually in frontend
+def movieListingAdd(request):
+
+    # Get maxID + 1
+    movie_id = MovieList.objects.latest('id').id
+    latest_id = movie_id + 1
+    msg = ''
+
+    # Get required information from the form
+    if request.method == "POST":
+        form = AddMovieForm(request.POST)
+        if form.is_valid():
+            i = latest_id
+            n = form.cleaned_data["movie_name"]
+            g = form.cleaned_data["movie_genre"]
+            a = form.cleaned_data["overall_rating"]
+            d = form.cleaned_data["date_release"]
+            u = form.cleaned_data["movie_image_url"]
+
+            # If no existing movie found , add new record
+            movie_check = MovieList.objects.filter(id=i)
+            movie_name_check = MovieList.objects.filter(movie_name=n)
+            print(movie_check)
+            if not movie_check or not movie_name_check:
+                t = MovieList(id=i, movie_name=n, movie_genre=g, overall_rating=a, date_release=d, movie_image_url=u)
+                msg = "Movie added"
+                t.save()
+            else:
+                msg = "Movie exists. Please try with other movie name"
+                
+        else:
+            msg = "Please check if you fill in correctly"
+            
+    else:
+        form = AddMovieForm()
+        add_movie_form = MovieList()
+    
+    context = {"form":form, 
+                "msg":msg
+    }
+    
+    return render(request, "main/movie_listing_add.html", context)
+
+# Function for admin to delete movie manually in frontend
+def movieListingDelete(request):
+    msg = ''
+
+    # Form
+    if request.method == "POST":
+        form = DeleteMovieForm(request.POST)
+        if form.is_valid():
+            s = form.cleaned_data["movie_name"]
+            print(s)
+            movie_check = MovieList.objects.filter(movie_name=s)
+            
+            # If no movie name found, then print message
+            if not movie_check:
+                msg = 'Movie not exists'
+
+            # If movie name found, then delete movie
+            else:
+                MovieList.objects.filter(movie_name=s).delete()
+                msg = "Movie deleted"
+        else:
+            msg = "Please check if you fill in correctly"
+                    
+    else:
+        form = DeleteMovieForm()
+        delete_movie_form = MovieList()
+    
+    context = {"form":form, 
+                "msg":msg
+    }
+
+    return render(request, "main/movie_listing_delete.html", context)
+
+# Function for RatingList(Admin) page
+def rateListing(request):
+    ratings = RatingList.objects.all().order_by('-id')
+    context = {"ratelist": ratings
+    }
+    return render(request, "main/rate_listing.html", context)
+
+# Function for admin to add rating on behalf of customer manually
+def rateListingAdd(request):
+    msg = ''
+
+    # Get required data from the form
+    if request.method == "POST":
+        form = AddRatingForm(request.POST)
+        if form.is_valid():
+            s = form.cleaned_data["rating_score"]
+            m = form.cleaned_data["movie_id"]
+            u = form.cleaned_data["user_id"]
+
+            user_check = User.objects.filter(username=u)
+            print(user_check)
+
+            # Prefixed as Rate action and earn 2 points
+            # Because admin do not has access to customer's social media
+            a = "Rate"
+            p = 2
+            
+            # If user not found, print message
+            if not user_check:
+                msg = 'User not exists'
+                print(msg)
+
+            # Else, add record
+            else:
+                user = User.objects.get(username=u)
+                t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
+                r = Reward_Point(user_id=user, point=p)
+                t.save()
+                r.save()
+
+                msg = "Rating added"
+                print(msg)
+            
+        else:
+            msg = "Please check if you field in correctly"
+            
+        return render(request, "main/rate_listing_add.html", {"form":form,"msg":msg})
+        
+    else:
+        form = AddRatingForm()
+        add_movie_form = RatingList()
+    
+    return render(request, "main/rate_listing_add.html", {"form":form})
+
+# Function for admin to delete rating based on rating ID
+def rateListingDelete(request):
+    if request.method == "POST":
+        form = DeleteRatingForm(request.POST)
+        if form.is_valid():
+            s = form.cleaned_data["id"]
+            print(s)
+            rating_check = RatingList.objects.filter(id=s)
+            
+            # If ratingID not found, print message
+            if not rating_check:
+                msg = 'Rating not exists'
+            
+            # Else, delete record
+            else:
+                RatingList.objects.filter(id=s).delete()
+                msg = "Rating deleted"
+            
+        else:
+            msg = "Please check if you field in correctly"
+                    
+    else:
+        form = DeleteRatingForm()
+        delete_movie_form = RatingList()
+    
+    context = {"form":form, 
+                "msg":msg
+    }
+
+    return render(request, "main/rate_listing_delete.html", context)
+
+# Function for UserListing(Admin) page
+def userListing(request):
+    
+    msg = ''
+    users = User.objects.all()
+
+    # Form for search User function by username
+    if request.method == "POST":
+        form = UserSearchForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            username_search_done = User.objects.filter(username__icontains=username)
+            
+            if not username_search_done:
+                msg = 'No user found'
+                print(msg)
+            else:
+                users = User.objects.filter(username__icontains=username)
+                msg = 'Please refer below'
+
+    else:
+        form = UserSearchForm()
+        user_form = User()
+
+    context = {"userlist": users,
+                "form":form, 
+                "msg":msg
+    }
+
+    return render(request, "main/user_listing.html", context)
+
+# Function for blacklist user from frontend
+def userBlacklist(request):
+    msg = ''
+    if request.method == "POST":
+        form = UserSearchForm(request.POST)
+
+        # Blacklist based on username
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            username_search_done = User.objects.filter(username=username)
+            
+            # If no user found, print message
+            if not username_search_done:
+                msg = 'No user found'
+                print(msg)
+            
+            # Else, update user as inactive
+            else:
+                users = User.objects.get(username=username)
+                print(users)
+                users.is_active = False
+                users.save()
+                msg = 'User blacklisted'
+    else:
+        form = UserSearchForm()
+        user_form = User()
+
+    context = {"form":form, 
+                "msg":msg
+    }
+
+    return render(request, "main/user_blacklist.html", context)
+
+
+# Function for backend admin to upload movie
 def movie_upload(request):
     if request.method == 'POST':
         movie_resource = MovieListResources()
@@ -392,6 +698,7 @@ def movie_upload(request):
             value.save()
     return render(request, 'movie_upload.html')
 
+# Function for backend admin to upload rating
 def rating_upload(request):
     if request.method == 'POST':
         rating_resource = RatingListResources()
@@ -415,6 +722,7 @@ def rating_upload(request):
             value.save()
     return render(request, 'rating_upload.html')
 
+# Function for backend admin to upload prize
 def prize_upload(request):
     if request.method == 'POST':
         prize_resource = PrizeListResources()
@@ -435,6 +743,7 @@ def prize_upload(request):
             value.save()
     return render(request, 'prize_upload.html')
 
+# Function for backend admin to upload reward point
 def reward_point_upload(request):
     if request.method == 'POST':
         reward_point_resource = RewardPointResources()
@@ -455,208 +764,3 @@ def reward_point_upload(request):
             )
             value.save()
     return render(request, 'reward_point_upload.html')
-
-def movieListing(request): 
-    movies = MovieList.objects.all().order_by('-id')
-
-    if request.method == "POST":
-        form = MovieSearchForm(request.POST)
-        if form.is_valid():
-            movies_search = form.cleaned_data["movie_name"]
-            movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search)
-            
-            if not movies_search_done:
-                msg = 'No movie found'
-                print(msg)
-            else:
-                movies = MovieList.objects.filter(movie_name__icontains=movies_search)
-                msg = 'Please refer below'
-        
-        return render(request, "main/movie_listing.html", {"movielist": movies,"form":form, "msg":msg})
-
-    else:
-        form = MovieSearchForm()
-        movielist_form = MovieList()
-
-        
-    return render(request, "main/movie_listing.html", {"movielist": movies,"form":form})
-
-def movieListingAdd(request):
-    movie_id = MovieList.objects.latest('id').id
-    latest_id = movie_id + 1
-    
-    if request.method == "POST":
-        form = AddMovieForm(request.POST)
-        if form.is_valid():
-            i = latest_id
-            n = form.cleaned_data["movie_name"]
-            g = form.cleaned_data["movie_genre"]
-            a = form.cleaned_data["overall_rating"]
-            d = form.cleaned_data["date_release"]
-            u = form.cleaned_data["movie_image_url"]
-
-            movie_check = MovieList.objects.filter(id=i)
-            print(movie_check)
-            if not movie_check:
-                t = MovieList(id=i, movie_name=n, movie_genre=g, overall_rating=a, date_release=d, movie_image_url=u)
-                msg = "Movie added"
-                t.save()
-            else:
-                msg = "ID exists. Please try with other ID"
-                
-        
-        else:
-            msg = "Please check if you field in correctly"
-            
-        return render(request, "main/movie_listing_add.html", {"form":form, "msg":msg})
-        
-    else:
-        form = AddMovieForm()
-        add_movie_form = MovieList()
-    
-    return render(request, "main/movie_listing_add.html", {"form":form})
-
-def movieListingDelete(request):
-    if request.method == "POST":
-        form = DeleteMovieForm(request.POST)
-        if form.is_valid():
-            s = form.cleaned_data["movie_name"]
-            print(s)
-            movie_check = MovieList.objects.filter(movie_name=s)
-            
-            if not movie_check:
-                msg = 'Movie not exists'
-            else:
-                MovieList.objects.filter(movie_name=s).delete()
-                msg = "Movie deleted"
-        else:
-            msg = "Please check if you field in correctly"
-            
-        return render(request, "main/movie_listing_delete.html", {"form":form,"msg":msg})
-        
-    else:
-        form = DeleteMovieForm()
-        delete_movie_form = MovieList()
-    
-    return render(request, "main/movie_listing_delete.html", {"form":form})
-
-def rateListing(request):
-    ratings = RatingList.objects.all().order_by('-id')
-    return render(request, "main/rate_listing.html", {"ratelist": ratings})
-
-def rateListingAdd(request):
-    if request.method == "POST":
-        form = AddRatingForm(request.POST)
-        if form.is_valid():
-            s = form.cleaned_data["rating_score"]
-            m = form.cleaned_data["movie_id"]
-            a = form.cleaned_data["action"]
-            u = form.cleaned_data["user_id"]
-            user_check = User.objects.filter(username=u)
-            print(user_check)
-
-            if a == "Rate":
-                p = 2
-            else:
-                p = 3
-                s = None
-            
-            if not user_check:
-                msg = 'User not exists'
-                print(msg)
-
-            else:
-                user = User.objects.get(username=u)
-                t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
-                r = Reward_Point(user_id=user, point=p)
-                t.save()
-                r.save()
-
-                msg = "Rating added"
-                print(msg)
-            
-        else:
-            msg = "Please check if you field in correctly"
-            
-        return render(request, "main/rate_listing_add.html", {"form":form,"msg":msg})
-        
-    else:
-        form = AddRatingForm()
-        add_movie_form = RatingList()
-    
-    return render(request, "main/rate_listing_add.html", {"form":form})
-
-def rateListingDelete(request):
-    if request.method == "POST":
-        form = DeleteRatingForm(request.POST)
-        if form.is_valid():
-            s = form.cleaned_data["id"]
-            print(s)
-            rating_check = RatingList.objects.filter(id=s)
-            
-            if not rating_check:
-                msg = 'Rating not exists'
-
-            else:
-                RatingList.objects.filter(id=s).delete()
-                msg = "Rating deleted"
-            
-        else:
-            msg = "Please check if you field in correctly"
-            
-        return render(request, "main/rate_listing_delete.html", {"form":form,"msg":msg})
-        
-    else:
-        form = DeleteRatingForm()
-        delete_movie_form = RatingList()
-    
-    return render(request, "main/rate_listing_delete.html", {"form":form})
-
-def userListing(request):
-    users = User.objects.all()
-    if request.method == "POST":
-        form = UserSearchForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            username_search_done = User.objects.filter(username__icontains=username)
-            
-            if not username_search_done:
-                msg = 'No user found'
-                print(msg)
-            else:
-                users = User.objects.filter(username__icontains=username)
-                msg = 'Please refer below'
-        
-        return render(request, "main/user_listing.html", {"userlist": users,"form":form, "msg":msg})
-
-    else:
-        form = UserSearchForm()
-        user_form = User()
-
-    return render(request, "main/user_listing.html", {"userlist": users, "form":form})
-
-def userBlacklist(request):
-    if request.method == "POST":
-        form = UserSearchForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            username_search_done = User.objects.filter(username=username)
-            
-            if not username_search_done:
-                msg = 'No user found'
-                print(msg)
-            else:
-                users = User.objects.get(username=username)
-                print(users)
-                users.is_active = False
-                users.save()
-                msg = 'User blacklisted'
-        
-        return render(request, "main/user_blacklist.html", {"form":form, "msg":msg})
-
-    else:
-        form = UserSearchForm()
-        user_form = User()
-
-    return render(request, "main/user_blacklist.html", {"form":form})
-

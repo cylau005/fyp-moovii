@@ -64,8 +64,8 @@ Profile
 
   <select name="prize_chosen" action="">
     <option selected disabled="true">-- Select Prize--</option>
-      {% for prizei in prizeItem %}
-        <option value="{{ prizei.item_id }}" >{{prizei.item_name}}</option>
+      {% for prizei in prize %}
+        <option value="{{ prizei.item_id }}" >{{prizei.item_name}} (required: {{prizei.require_points}} points)</option>
       {% endfor %}
   </select>
   <input type="submit" class="btn btn-success" value="Redeem">

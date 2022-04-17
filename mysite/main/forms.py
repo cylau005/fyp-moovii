@@ -42,12 +42,10 @@ class AddRatingForm(forms.Form):
     movie_id = forms.CharField(label='Movie ID')
     rating_score = forms.IntegerField(label='Rating Score', 
                   widget=forms.Select(choices=RATE_CHOICES))
-    action = forms.CharField(label='Rate or Share', 
-            widget=forms.Select(choices=ACTION_CHOICES))
     
     class Meta:
         model = RatingList
-        fields = ["user_id","movie_id","rating_score","action"]
+        fields = ["user_id","movie_id","rating_score"]
 
 class DeleteRatingForm(forms.Form):
     id = forms.IntegerField(label='Rating ID')
