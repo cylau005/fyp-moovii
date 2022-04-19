@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.db.models import Sum
 from django.contrib.auth.models import User
-from .models import MovieList, RatingList, Reward_Point, PrizeList, CF_List
+from .models import MovieList, RatingList, Reward_Point, PrizeList, CF_List, Interact_List
 from .resources import MovieListResources, RatingListResources, RewardPointResources, PrizeListResources
 from .forms import RatingForm, AddMovieForm, AddRatingForm, DeleteRatingForm, MovieSearchForm, UserSearchForm, DeleteMovieForm
 from register.models import Account
@@ -169,10 +169,11 @@ def home(request):
     newmovies = MovieList.objects.all().order_by('-id')[:6]
 
     # Get movie which has max rating
-    movies = MovieList.objects.filter(overall_rating__gte=5)
+    movies = MovieList.objects.filter(overall_rating__gte=5).order_by('?')
     
     # Custom variable
     genmovies = None
+    intMovie = None
     msg = ''
 
     # If is registered viewer
@@ -181,20 +182,21 @@ def home(request):
         # Get register viewer's favourite genre
         user = request.user
         fav_genre = Account.objects.filter(user=user.id)
+        intMovie = Interact_List.objects.filter(user_id=user).order_by('?')[:6]
 
         # If favourite genre found, filter 6 movies that related to the genre 
         # and overall rating is equal or greater than 3
         if len(fav_genre) > 0:
             for g in fav_genre:
                 gen=g.genres
-                genmovies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3)[:6]
+                genmovies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3).order_by('?')[:6]
         
         # Else, get random 6 movies
         else:
-            movies = MovieList.objects.all()[:6]
+            movies = MovieList.objects.all().order_by('?')[:6]
 
         # Get 12 movies from CF List
-        cf_list = CF_List.objects.all()[:12]  
+        cf_list = CF_List.objects.all().order_by('?')[:12]  
 
     # Else, no CF List
     else:
@@ -223,7 +225,8 @@ def home(request):
                 "genmovies": genmovies, 
                 "form":form, 
                 "cflist":cf_list, 
-                "msg":msg
+                "msg":msg,
+                "intMovie":intMovie,
     }
 
     return render(request, "main/home.html", context)
@@ -242,17 +245,29 @@ def rating(request, id):
     cflist = ''
     msg = ''
     today = datetime.date.today()
+        
 
     # If user is a registered viewer, get the predicted rating for that user and movie if available
+    # If user is a registered viewer, everytime user interact in the website, it should show relevant movies next time
     if request.user.is_authenticated:
         user = request.user
         cflist = CF_List.objects.filter(user_id=user.id, movie_id=id)
+        intMovie = MovieList.objects.filter(movie_genre=genres, overall_rating=5).order_by('?')
+        
+        Interact_List.objects.filter(user_id=user).delete()
+
+        for i in intMovie:
+            intMovie_Save = Interact_List(user_id=user, movie_id=i.id, 
+                                    movie_name=i.movie_name, movie_image_url = i.movie_image_url)
+            intMovie_Save.save()
         
         if not len(cflist):
             cf_score = 'No predicted'
         else:
             cf_score = cflist.values_list('weighted_score', flat=True)[0]
             print(cf_score)
+        
+
         
     # Rating form
     if 'actiontype' in request.POST:

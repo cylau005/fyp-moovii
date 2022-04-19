@@ -48,3 +48,10 @@ class CF_List(models.Model):
     movie_id = models.IntegerField(default=None, blank=True, null=True)
     movie_name = models.CharField(max_length=100, blank=True)
     movie_image_url = models.CharField(max_length=255, default=None, blank=True, null=True)
+
+# Model to keep all the similar movie if user interact in the website
+class Interact_List(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    movie_id = models.IntegerField(default=None, blank=True, null=True)
+    movie_name = models.CharField(max_length=100, blank=True)
+    movie_image_url = models.CharField(max_length=255, default=None, blank=True, null=True)
