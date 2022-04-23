@@ -15,8 +15,13 @@ class AccountCredit(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Credit Card'
 
+class AccountBankIn(admin.StackedInline):
+    model = BankIn
+    can_delete = False
+    verbose_name_plural = 'BankIn'
+
 class CustomizedUserAdmin (UserAdmin):
-    inlines = (AccountInline, AccountCredit, )
+    inlines = (AccountInline, AccountCredit,AccountBankIn, )
 
 
 admin.site.unregister(User)

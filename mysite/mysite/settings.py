@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 #     }
 # }
 
-# Live Database
+Live Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
