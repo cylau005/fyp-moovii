@@ -117,15 +117,12 @@ Movie
               </div>
               <input type="submit" class="btn btn-primary" name='actiontype' value="Rate">
               
-              <!-- <input type="submit" class="btn btn-primary" name='actiontype' value="Share"> -->
-              <!-- 
-                <div class="fb-share-button" data-href="https://fyp-moovii.herokuapp.com/movie_detail/{{movieID}}/" data-layout="button" data-size="large" name='actiontype' value="Share">
+              <input type="submit" class="btn btn-primary" name='actiontype' value="Share" onclick="openShare()">
+              
+                <div id="shareButton" style="display:{{openShare}};" class="fb-share-button" data-href="https://fyp-moovii.herokuapp.com/movie_detail/{{movieID}}/" data-layout="button" data-size="large" name='actiontype' value="Share">
                   <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffyp-moovii.herokuapp.com%2Fmovie_detail%2F{{movieID}}%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a>
                 </div>      
-              -->
-              <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffyp-moovii.herokuapp.com%2Fmovie_detail%2F{{movieID}}%2F&amp;src=sdkpreparse" target="_blank">
-                <input type="submit" class="btn btn-primary" name='actiontype' value="Share">
-              </a>
+             
             </div>
         </form>
         <br />
@@ -142,6 +139,7 @@ Movie
     </div>
   </form>
 </div>
+
 
 {% endblock %} 
 

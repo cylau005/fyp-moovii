@@ -245,7 +245,7 @@ def rating(request, id):
     cflist = ''
     msg = ''
     today = datetime.date.today()
-        
+    openShare = 'none'
 
     # If user is a registered viewer, get the predicted rating for that user and movie if available
     # If user is a registered viewer, everytime user interact in the website, it should show relevant movies next time
@@ -297,6 +297,7 @@ def rating(request, id):
 
                 # If is sharing, earn 3 reward point
                 else:
+                    openShare = 'block'
                     s = None
                     p = 3
                 
@@ -320,6 +321,7 @@ def rating(request, id):
                 rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a).update(rating_score=s)
                 msg = a + ' successfully'
             else:
+                openShare = 'block'
                 rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a).update(date_rating=today)
                 msg = a + ' successfully'
 
@@ -331,6 +333,7 @@ def rating(request, id):
             'movieID':movieID,
             'cflist':cflist,
             'cf_score':cf_score,
+            'openShare':openShare,
             }
         
     return render(request, "main/movie_detail.html", context)
