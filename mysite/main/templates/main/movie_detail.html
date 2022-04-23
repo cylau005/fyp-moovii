@@ -47,10 +47,6 @@ Movie
 
 </style>
 
-<div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v13.0" nonce="i2GYHrTE"></script>
-
-
 <div class="movie-detail">
   <form method="POST" class="form-group">
     <div class="row">
@@ -119,11 +115,7 @@ Movie
               <input type="submit" class="btn btn-primary" name='actiontype' value="Rate">
               
               <input type="submit" class="btn btn-primary" name='actiontype' value="Share">
-              
-                <div id="shareButton" style="display:{{openShare}};" class="fb-share-button" data-href="https://fyp-moovii.herokuapp.com/movie_detail/{{movieID}}/" data-layout="button" data-size="large" name='actiontype' value="Share">
-                  <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffyp-moovii.herokuapp.com%2Fmovie_detail%2F{{movieID}}%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a>
-                </div>      
-             
+              <a style="display:{{openShare}};" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffyp-moovii.herokuapp.com%2Fmovie_detail%2F{{movieID}}%2F&amp;src=sdkpreparse" >Go to Facebook</a>             
             </div>
         </form>
         <br />
