@@ -95,7 +95,7 @@ function closeForm() {
         {% for movie in intMovie %}
                 <div class="col-md-2">
                     <div class="movie-img">
-                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
+                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.movie_id}}" {% endif %}>
                         <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
                         </a>
                         <p>{{movie.movie_name}}</p>
