@@ -20,7 +20,7 @@ def register(request):
     # Populate all distinct movie genre into Registration page's favourite genre drop down list
     # Get individual genres from MovieList
     movie = MovieList.objects.values_list("movie_genre", flat=True).distinct()
-    total_movie = len(movie)
+    
     genre_list = ''
     for i in movie:
         genre_list = genre_list + '|' + i

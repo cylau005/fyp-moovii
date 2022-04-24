@@ -165,6 +165,7 @@ def cf_approach(request, id, user, user_score):
     
 # Function for homepage
 def home(request):
+    
     # Get top 6 new movies
     newmovies = MovieList.objects.all().order_by('-id')[:6]
 
@@ -174,6 +175,7 @@ def home(request):
     # Custom variable
     genmovies = None
     intMovie = None
+    select_genre_done = None
     msg = ''
 
     # If is registered viewer
@@ -191,9 +193,9 @@ def home(request):
                 gen=g.genres
                 genmovies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3).order_by('?')[:6]
         
-        # Else, get random 6 movies
+        # Else, get all movies
         else:
-            movies = MovieList.objects.all().order_by('?')[:6]
+            movies = MovieList.objects.all().order_by('?')
 
         # Get 12 movies from CF List
         cf_list = CF_List.objects.all().order_by('?')[:12]  
@@ -202,8 +204,18 @@ def home(request):
     else:
         cf_list = None
     
-    # Movie search function
+    # Individual Movies after Genre filter selected
+    genre_list = ''
+    movie = MovieList.objects.values_list("movie_genre", flat=True).distinct()
+    for i in movie:
+        genre_list = genre_list + '|' + i
+    split_genre = genre_list.split('|')
+    split_genre = list(dict.fromkeys(split_genre))
+    split_genre = list(filter(None, split_genre))
+
+    # Form for movie search and genre filter
     if request.method == "POST":
+        # Movie search function
         form = MovieSearchForm(request.POST)
         if form.is_valid():
             movies_search = form.cleaned_data["movie_name"]
@@ -214,8 +226,12 @@ def home(request):
                 print(msg)
             else:
                 movies = MovieList.objects.filter(movie_name__icontains=movies_search)
-                msg = 'Please refer below'        
+                msg = 'Please refer below'       
 
+        if 'movie_genre' in request.POST:
+            select_genre = request.POST['movie_genre']
+            select_genre_done = MovieList.objects.filter(movie_genre__icontains=select_genre).order_by('?')
+            movies = select_genre_done 
     else:
         form = MovieSearchForm()
         movielist_form = MovieList()
@@ -227,8 +243,9 @@ def home(request):
                 "cflist":cf_list, 
                 "msg":msg,
                 "intMovie":intMovie,
+                "split_genre":split_genre,
     }
-
+    
     return render(request, "main/home.html", context)
 
 # Function for Rating 
@@ -598,6 +615,7 @@ def rateListingAdd(request):
 
 # Function for admin to delete rating based on rating ID
 def rateListingDelete(request):
+    msg = ''
     if request.method == "POST":
         form = DeleteRatingForm(request.POST)
         if form.is_valid():
