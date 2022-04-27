@@ -18,11 +18,21 @@ import pandas as pd
 # CF Approach - Pearson Correlation
 def cf_approach(request, id, user, user_score):  
     
+    # CF take similar user who has the same birthday Year as well
+    dob = Account.objects.get(user=user.id)
+    myyear = dob.dob.year
+
+    sameBirth = Account.objects.filter(dob__year__exact=myyear)
+    sameBirthId = []
+    for i in sameBirth:
+        sameBirthId.append(i.id)
+
     # Get all the movie
     movies = MovieList.objects.all()
 
     # Get all the rating related Rate action
-    ratinglists = RatingList.objects.filter(action='Rate')
+    ratinglists = RatingList.objects.filter(user_id__in=sameBirthId, action='Rate')
+    
 
     # Form master movie list dataframe
     m=[]
@@ -250,7 +260,7 @@ def home(request):
 
 # Function for Rating 
 def rating(request, id):    
-
+    
     # Get movie detail for the selected movie
     movie = MovieList.objects.get(id=id)
     genres = movie.movie_genre
