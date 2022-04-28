@@ -191,9 +191,12 @@ def home(request):
     # If is registered viewer
     if request.user.is_authenticated:
 
-        # Get register viewer's favourite genre
         user = request.user
+
+        # Get register viewer's favourite genre
         fav_genre = Account.objects.filter(user=user.id)
+
+        # Get similar genre movies based on your last visit of the movie detail page
         intMovie = Interact_List.objects.filter(user_id=user).order_by('?')[:6]
 
         # If favourite genre found, filter 6 movies that related to the genre 
@@ -275,14 +278,21 @@ def rating(request, id):
     openShare = 'none'
 
     # If user is a registered viewer, get the predicted rating for that user and movie if available
-    # If user is a registered viewer, everytime user interact in the website, it should show relevant movies next time
+    # If user is a registered viewer, everytime user visit the movie detail page in the website, 
+    #                                 it should show relevant movies next time
     if request.user.is_authenticated:
         user = request.user
+
+        # Getting all movie from Pearson Correlation approach
         cflist = CF_List.objects.filter(user_id=user.id, movie_id=id)
-        intMovie = MovieList.objects.filter(movie_genre=genres, overall_rating=5).order_by('?')
+
+        # Getting all high rated movies that related to the movie genre you have visited
+        intMovie = MovieList.objects.filter(movie_genre=genres, overall_rating__gte=3).order_by('?')[:6]
         
+        # Delete the current relevant movie you might like
         Interact_List.objects.filter(user_id=user).delete()
 
+        # Insert latest relevant movies that you visited in the last movie detail page
         for i in intMovie:
             intMovie_Save = Interact_List(user_id=user, movie_id=i.id, 
                                     movie_name=i.movie_name, movie_image_url = i.movie_image_url)

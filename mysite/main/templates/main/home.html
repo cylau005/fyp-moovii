@@ -42,17 +42,41 @@ Home
   }
   #genre_selection li button{
     margin-bottom: 1%;
-    
-    
   }
 
+  .card a{
+    text-decoration: None;
+  }
+
+  .card:hover{
+    background-color: rgb(164, 164, 164);
+  }
+
+  .card-text{
+    color:black;
+  }
+
+
+
+ 
 </style>
+
+<!-- Function for open or close popup banner for Visitor -->
+<script>
+function openBanner() {
+  document.getElementById("popUpBanner").style.display = "block";
+}
+
+function closeBanner() {
+  document.getElementById("popUpBanner").style.display = "none";
+}
+</script>
 
 {% if request.user.is_authenticated %}
 
 {% else %}
 <div class="form-popup" id="popUpBanner">
-    <h1 onclick="closeForm()">
+    <h1 onclick="closeBanner()">
       <br />
       Why are you just watching the movie when <br />
       you can also getting the prizes?<br />
@@ -61,16 +85,10 @@ Home
     <br />
 </div>
 {% endif %}
-<script>
-function openForm() {
-  document.getElementById("popUpBanner").style.display = "block";
-}
 
-function closeForm() {
-  document.getElementById("popUpBanner").style.display = "none";
-}
-</script>
 
+
+<!-- Search Function -->
 <div class="search-container" class="form-group">
     <form method="post" >
         {% csrf_token %}       
@@ -82,73 +100,96 @@ function closeForm() {
 <br/>
 
 
-<h2>Upcoming Movies</h2><br/>
-<div class="row">
+<!-- Show individual latest movie -->
+<h2>Upcoming Movies</h2>
+<div class="row" >
     {% for movie in newmovie %}
-                <div class="col-md-2">
-                    <div class="movie-img">
-                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
-                        <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
-                        </a>
-                        <p>{{movie.movie_name}}</p>
-                    </div>
-                </div>
-        {% endfor %}
+    <div class="card" style="width: 12.5rem;">
+      <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
+        <img class="card-img-top" src={{movie.movie_image_url}}>
+      
+      <div class="card-body">
+        <p class="card-text">{{movie.movie_name}}</p>
+      </div>
+    </a>
+    </div>
+    {% endfor %}
 </div>
+<br />
  
+
+<!-- Show individual recommended movie -->
 {% if request.user.is_authenticated %}
 <h2>Recommended for You</h2>
 <div class="movie-detail">
     <div class="row">
+        <!-- Based on Pearson Correlation -->
         {% for movie in cflist %}
-                <div class="col-md-2">
-                    <div class="movie-img">
-                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.movie_id}}" {% endif %}>
-                        <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
-                        </a>
-                        <p>{{movie.movie_name}}</p>
-                        <p>Predict Score: {{movie.weighted_score}}</p>
-                    </div>
+          <div class="card" style="width: 12.5rem;">
+              <a href="/movie_detail/{{movie.movie_id}}">
+                <img class="card-img-top" src={{movie.movie_image_url}}>
+              
+                <div class="card-body" >
+                  <p class="card-text">{{movie.movie_name}}</p>
                 </div>
+                <div class="card-footer">
+                  <p class="card-text">Predict Score: {{movie.weighted_score}}</p>
+                </div>
+             </a>
+          </div>
         {% endfor %}
-
+        
+        <!-- Based on Last Visit of your movie detail page  -->
         {% for movie in intMovie %}
-                <div class="col-md-2">
-                    <div class="movie-img">
-                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.movie_id}}" {% endif %}>
-                        <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
-                        </a>
-                        <p>{{movie.movie_name}}</p>
-                    </div>
-                </div>
+          <div class="card" style="width: 12.5rem;">
+            <a href="/movie_detail/{{movie.movie_id}}">
+              <img class="card-img-top" src={{movie.movie_image_url}}>
+            
+              <div class="card-body">
+                <p class="card-text">{{movie.movie_name}}</p>
+              </div>
+              <div class="card-footer">
+                <p class="card-text">You might also like</p>
+              </div>
+            </a>
+          </div>
         {% endfor %}
 
+        <!-- Based on Favourite Genre you selected in registration page  -->
         {% for movie in genmovies %}
-                <div class="col-md-2">
-                    <div class="movie-img">
-                        <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
-                        <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
-                        </a>
-                        <p>{{movie.movie_name}}</p>
-                    </div>
-                </div>
+          <div class="card" style="width: 12.5rem;">
+            <a href="/movie_detail/{{movie.id}}">
+              <img class="card-img-top" src={{movie.movie_image_url}}>
+            
+              <div class="card-body">
+                <p class="card-text">{{movie.movie_name}}</p>
+              </div>
+              <div class="card-footer">
+                <p class="card-text">Your favourite genre</p>
+              </div>
+            </a>
+          </div>
         {% endfor %}
       </div>
 </div>
+<br />
+
+<!-- If you not login, show popular movie with high rating -->
 {% else %}
 <h2>Popular Movies</h2><br/>
 <div class="movie-detail">
     <div class="row">
       {% for movie in movielist %}
         {% if movie.overall_rating >= 5 %}
-              <div class="col-md-2">
-                  <div class="movie-img">
-                    <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
-                      <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
-                    </a>
-                      <p>{{movie.movie_name}}</p>
-                  </div>
+          <div class="card" style="width: 12.5rem;">
+            <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
+              <img class="card-img-top" src={{movie.movie_image_url}}>
+            
+              <div class="card-body">
+                <p class="card-text">{{movie.movie_name}}</p>
               </div>
+            </a>
+          </div>
         {% endif %}
       {% endfor %}
     </div>
@@ -157,7 +198,8 @@ function closeForm() {
 {% endif %}
 
 
-
+<h2>Browse Our Library</h2>
+<!-- Genres filter  -->
 <ul id="genre_selection">
   <form method="post">
   {% csrf_token %}     
@@ -170,17 +212,19 @@ function closeForm() {
 </ul>
 </br>
 
+<!-- Display all high rating movies -->
 <div class="movie-detail">
   <div class="row">
     {{select_genre_done.movie_genre}}
     {% for movie in movielist %}
-            <div class="col-md-2">
-                <div class="movie-img">
-                  <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
-                    <img src={{movie.movie_image_url}} alt="" width="90%" height="90%"  />
-                  </a>
-                    <p>{{movie.movie_name}}</p>
+            <div class="card" style="width: 12.5rem;">
+              <a {% if request.user.is_authenticated %} href="/movie_detail/{{movie.id}}" {% endif %}>
+                <img class="card-img-top" src={{movie.movie_image_url}}>
+              
+                <div class="card-body">
+                  <p class="card-text">{{movie.movie_name}}</p>
                 </div>
+              </a>
             </div>
     {% endfor %}
   </div>
