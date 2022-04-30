@@ -90,88 +90,92 @@ def cf_approach(request, id, user, user_score):
     # Sort the user based on most common movie
     userSubsetGroup = sorted(userSubsetGroup, key=lambda x:len(x[1]), reverse=True)    
     print(userSubsetGroup)
-
-    # Pearson correlation approach
-    PCDict = {}
     
-    for name, group in userSubsetGroup:
-        group = group.sort_values(by='movieId')
-        input_DF = input_DF.sort_values(by='movieId')
-        n = len(group)
-        temp = input_DF[input_DF['movieId'].isin(group['movieId'].tolist())]
-        tempInputDFList = temp['ratingScore'].tolist()
-        tempGroupList = group['ratingScore'].tolist()
+    print(len(userSubsetGroup))
+    if len(userSubsetGroup) > 0:
+    
+        # Pearson correlation approach
+        PCDict = {}
         
-        # Calculating pearson correlation between two users, so called userX and userY
-        userX = sum([i**2 for i in tempInputDFList]) - pow(sum(tempInputDFList), 2) / float(n)
-        userY = sum([i**2 for i in tempGroupList]) - pow(sum(tempGroupList), 2) / float(n)
-        userXY = sum( i*j for i, j in zip(tempInputDFList, tempGroupList)) - sum(tempInputDFList) * sum(tempGroupList) / float(n)
+        for name, group in userSubsetGroup:
+            group = group.sort_values(by='movieId')
+            input_DF = input_DF.sort_values(by='movieId')
+            n = len(group)
+            temp = input_DF[input_DF['movieId'].isin(group['movieId'].tolist())]
+            tempInputDFList = temp['ratingScore'].tolist()
+            tempGroupList = group['ratingScore'].tolist()
+            
+            # Calculating pearson correlation between two users, so called userX and userY
+            userX = sum([i**2 for i in tempInputDFList]) - pow(sum(tempInputDFList), 2) / float(n)
+            userY = sum([i**2 for i in tempGroupList]) - pow(sum(tempGroupList), 2) / float(n)
+            userXY = sum( i*j for i, j in zip(tempInputDFList, tempGroupList)) - sum(tempInputDFList) * sum(tempGroupList) / float(n)
+            
+            # Avoid 0
+            if userX != 0 and userY != 0:
+                PCDict[name] = userXY / sqrt(userX * userY)
+            else:
+                PCDict[name] = 0
         
-        # Avoid 0
-        if userX != 0 and userY != 0:
-            PCDict[name] = userXY / sqrt(userX * userY)
-        else:
-            PCDict[name] = 0
-    
-    pearsonDF = pd.DataFrame.from_dict(PCDict, orient='index')
+        pearsonDF = pd.DataFrame.from_dict(PCDict, orient='index')
 
-    # Forming similarity index
-    pearsonDF.columns = ['similarityIndex']
-    pearsonDF['userId'] = pearsonDF.index
-    pearsonDF.index = range(len(pearsonDF))
-    
-    topUsers = pearsonDF.sort_values(by='similarityIndex', ascending=False)[0:50]
-    
-    # Merging the table between all top user and master rating list by inner join
-    topUsersRating = topUsers.merge(rating_DF, left_on='userId', right_on='userId', how='inner')
-    print(topUsersRating[0:12])
+        # Forming similarity index
+        pearsonDF.columns = ['similarityIndex']
+        pearsonDF['userId'] = pearsonDF.index
+        pearsonDF.index = range(len(pearsonDF))
+        
+        topUsers = pearsonDF.sort_values(by='similarityIndex', ascending=False)[0:50]
+        
+        # Merging the table between all top user and master rating list by inner join
+        topUsersRating = topUsers.merge(rating_DF, left_on='userId', right_on='userId', how='inner')
+        print(topUsersRating[0:12])
+        
 
-    # Calculate similarity index
-    topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['ratingScore']
-    print('Top User Rating:')
-    print(topUsersRating)
+        # Calculate similarity index
+        topUsersRating['weightedRating'] = topUsersRating['similarityIndex'] * topUsersRating['ratingScore']
+        print('Top User Rating:')
+        print(topUsersRating)
 
-    # Sum similarityIndex and WeightedRating
-    tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex','weightedRating']]
-    tempTopUsersRating.columns = ['sum_similarityIndex','sum_weightedRating']
-    print(tempTopUsersRating.head())
+        # Sum similarityIndex and WeightedRating
+        tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex','weightedRating']]
+        tempTopUsersRating.columns = ['sum_similarityIndex','sum_weightedRating']
+        print(tempTopUsersRating.head())
 
-    # Creates new dataframe
-    recommendation_df = pd.DataFrame()
+        # Creates new dataframe
+        recommendation_df = pd.DataFrame()
 
-    # Compute weighted average score
-    recommendation_df['w.avg_score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
-    recommendation_df['movieId'] = tempTopUsersRating.index
-    
-    # Filter weighted average score greater than 0 and make it integer
-    recommendation_df =  recommendation_df[recommendation_df['w.avg_score']>0]
-    recommendation_df['w.avg_score'] = recommendation_df['w.avg_score'].astype(int)
-    recommendation_df = recommendation_df.sort_values(by='w.avg_score', ascending=False)
-    recommendation_df = recommendation_df.drop('movieId',1)
-    print(recommendation_df)
-    
-    # Merged recommendation dataframe and master movie list to get neccessary data
-    final = pd.merge(recommendation_df, movie_DF, on='movieId')
-    
-    # Only recommend the movie if weighed average score is equal or greater than 3
-    final =  final[final['w.avg_score']>=3]
+        # Compute weighted average score
+        recommendation_df['w.avg_score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
+        recommendation_df['movieId'] = tempTopUsersRating.index
+        
+        # Filter weighted average score greater than 0 and make it integer
+        recommendation_df =  recommendation_df[recommendation_df['w.avg_score']>0]
+        recommendation_df['w.avg_score'] = recommendation_df['w.avg_score'].astype(int)
+        recommendation_df = recommendation_df.sort_values(by='w.avg_score', ascending=False)
+        recommendation_df = recommendation_df.drop('movieId',1)
+        print(recommendation_df)
+        
+        # Merged recommendation dataframe and master movie list to get neccessary data
+        final = pd.merge(recommendation_df, movie_DF, on='movieId')
+        
+        # Only recommend the movie if weighed average score is equal or greater than 3
+        final =  final[final['w.avg_score']>=3]
 
-    # Get all the rating done by the user
-    user_Rating = RatingList.objects.filter(user_id=user, action='Rate')
-    
-    # Filter rated movie from the final dataframe so it won't recommend same movie to user
-    for a in user_Rating:
-        final = final[final['movieId'] != a.movie_id]
+        # Get all the rating done by the user
+        user_Rating = RatingList.objects.filter(user_id=user, action='Rate')
+        
+        # Filter rated movie from the final dataframe so it won't recommend same movie to user
+        for a in user_Rating:
+            final = final[final['movieId'] != a.movie_id]
 
-    # Remove rated movie from the final dataframe so it won't recommend same movie to user
-    CF_List.objects.filter(user_id=user).delete()
-    print('Old CF deleted')
+        # Remove rated movie from the final dataframe so it won't recommend same movie to user
+        CF_List.objects.filter(user_id=user).delete()
+        print('Old CF deleted')
 
-    # Save final recommended movie list into CF_List model
-    for ind in final.index:
-        print(final['w.avg_score'][ind], final['movieName'][ind], final['movie_image_url'][ind])
-        t = CF_List(user_id=user, movie_id=final['movieId'][ind], weighted_score=final['w.avg_score'][ind], movie_name=final['movieName'][ind], movie_image_url=final['movie_image_url'][ind])
-        t.save()
+        # Save final recommended movie list into CF_List model
+        for ind in final.index:
+            print(final['w.avg_score'][ind], final['movieName'][ind], final['movie_image_url'][ind])
+            t = CF_List(user_id=user, movie_id=final['movieId'][ind], weighted_score=final['w.avg_score'][ind], movie_name=final['movieName'][ind], movie_image_url=final['movie_image_url'][ind])
+            t.save()
     
 # Function for homepage
 def home(request):
@@ -211,7 +215,7 @@ def home(request):
             movies = MovieList.objects.all().order_by('?')
 
         # Get 12 movies from CF List
-        cf_list = CF_List.objects.all().order_by('?')[:12]  
+        cf_list = CF_List.objects.filter(user_id=user).order_by('?')[:12]  
 
     # Else, no CF List
     else:
@@ -310,27 +314,31 @@ def rating(request, id):
     if 'actiontype' in request.POST:
         m = id
         a = request.POST['actiontype']
-
+        
         # Get number of rating or sharing done by the user to particular movie
         rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a)
         num_rated_movie = len(rated_movie)
-
+        
         # If no record found, add new record
         if num_rated_movie < 1:             
-
+            
             # Check how many rating or sharing done by the user on the same day   
             todayRateCount = RatingList.objects.filter(user_id=user, date_rating=today, action=a).count()
 
             # If less than 5 time, add new record
             if todayRateCount < 5:
-
+                
                 # If is rating, earn 2 reward point
                 if a == "Rate":
-                    s = request.POST['rating_score']
-                    p = 2
 
-                    # Compute new CF list
-                    cf_approach(request, id, user, s)
+                    # If got star and user press on Rate button
+                    if 'rating_score' in request.POST:
+                        s = request.POST['rating_score']
+                        p = 2
+                    
+                    # If no star selected and user press on Rate button, prompt message 
+                    else:
+                        msg = 'Please select a star'
 
                 # If is sharing, earn 3 reward point
                 else:
@@ -338,15 +346,16 @@ def rating(request, id):
                     s = None
                     p = 3
                 
-                t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
-                r = Reward_Point(user_id=user, point=p)
-                t.save()
-                r.save()
+                # If is rating or sharing, add record and compute movie rating average
+                if a == "Share" or (a == "Rate" and 'rating_score' in request.POST):
+                    t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
+                    r = Reward_Point(user_id=user, point=p)
+                    t.save()
+                    r.save()
+                    computeAvgRating(request, id)
+                    msg = a + ' successfully'
 
-                # Compute average score for the movie
-                computeAvgRating(request, id)
-                msg = a + ' successfully'
-            
+                
             # Else, print error message
             else:
                 msg = "You reached today limit, please try again tomorrow"
@@ -354,9 +363,12 @@ def rating(request, id):
         # Else, update record, and no new reward point earn
         else:
             if a == "Rate":
-                s = request.POST['rating_score']
-                rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a).update(rating_score=s)
-                msg = a + ' successfully'
+                if 'rating_score' in request.POST:
+                    s = request.POST['rating_score']
+                    rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a).update(rating_score=s)
+                    msg = a + ' successfully'
+                else:
+                    msg = 'Please select a star'
             else:
                 openShare = 'block'
                 rated_movie = RatingList.objects.filter(user_id=user, movie_id=id, action=a).update(date_rating=today)
