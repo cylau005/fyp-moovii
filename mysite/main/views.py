@@ -275,6 +275,13 @@ def rating(request, id):
     genres = movie.movie_genre
     movieID = movie.id
     genresm = genres.replace('|',' | ')
+
+    # Get individual genre for the selected movie
+    split_genre = genres.split('|')
+    split_genre = list(dict.fromkeys(split_genre))
+    split_genre = list(filter(None, split_genre))
+
+    # Set variable
     date = movie.date_release
     datem = date.year
     cf_score = ''
@@ -292,8 +299,15 @@ def rating(request, id):
         # Getting all movie from Pearson Correlation approach
         cflist = CF_List.objects.filter(user_id=user.id, movie_id=id)
 
+        # Create a list in order to exclude CF Movie from Interact Movie list
+        cflistMovie = []
+        for i in cflist:
+            cflistMovie.append(i.movie_id)
+        
+
         # Getting all high rated movies that related to the movie genre you have visited
-        intMovie = MovieList.objects.filter(movie_genre=genres, overall_rating__gte=3).order_by('?')[:6]
+        intMovie = MovieList.objects.filter(movie_genre__in=split_genre, overall_rating__gte=3). \
+                    exclude(id__in=cflistMovie).order_by('?')[:6]
         
         # Delete the current relevant movie you might like
         Interact_List.objects.filter(user_id=user).delete()
