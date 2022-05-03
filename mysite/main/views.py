@@ -155,7 +155,9 @@ def cf_approach(request, id, user, user_score):
         print(recommendation_df)
         
         # Merged recommendation dataframe and master movie list to get neccessary data
+        # Do not include the movie which has just done rated
         final = pd.merge(recommendation_df, movie_DF, on='movieId')
+        final = final[final['movieId'] != id]
         
         # Only recommend the movie if weighed average score is equal or greater than 3
         final =  final[final['w.avg_score']>=3]
