@@ -22,7 +22,7 @@ def cf_approach(request, id, user, user_score):
     dob = Account.objects.get(user=user.id)
     myyear = dob.dob.year
 
-    sameBirth = Account.objects.filter(dob__year__exact=myyear)
+    sameBirth = Account.objects.filter(dob__year__range=[myyear-5, myyear+5])
     sameBirthId = []
     for i in sameBirth:
         sameBirthId.append(i.id)
@@ -422,7 +422,7 @@ def profile(response):
     prize = PrizeList.objects.all()
 
     # Get all reward point history
-    reward = Reward_Point.objects.filter(user_id=user).order_by('-date_modified')
+    reward = Reward_Point.objects.filter(user_id=user).order_by('-id')
     
     # Custom variable
     msg = ''

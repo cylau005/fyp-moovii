@@ -18,7 +18,7 @@ class RatingListAdmin(ImportExportActionModelAdmin):
 
 @admin.register(Reward_Point)
 class RatingListAdmin(ImportExportActionModelAdmin):
-    list_display = ('user_id', 'point', 'date_modified', 'redeem_item_id')
+    list_display = ('id', 'user_id', 'point', 'date_modified', 'redeem_item_id')
 
 @admin.register(CF_List)
 class RatingListAdmin(ImportExportActionModelAdmin):
