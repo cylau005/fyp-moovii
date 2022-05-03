@@ -18,7 +18,7 @@ import pandas as pd
 # CF Approach - Pearson Correlation
 def cf_approach(request, id, user, user_score):  
     
-    # CF take similar user who has the same birthday Year as well
+    # CF take similar user who has the similar birthday Year (+5 or -5) as well
     dob = Account.objects.get(user=user.id)
     myyear = dob.dob.year
 
