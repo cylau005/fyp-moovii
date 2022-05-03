@@ -335,6 +335,9 @@ def rating(request, id):
                     if 'rating_score' in request.POST:
                         s = request.POST['rating_score']
                         p = 2
+
+                        
+                        cf_approach(request, m, user, s)
                     
                     # If no star selected and user press on Rate button, prompt message 
                     else:
