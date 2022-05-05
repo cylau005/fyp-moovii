@@ -6,7 +6,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 sched = BlockingScheduler()
 
 # Run once a day
-@sched.scheduled_job('interval', days=1)
+@sched.scheduled_job('interval', minutes=2)
 def cr():
     print('do crawler') 
     os.system("python main/imdbCrawl.py") 
