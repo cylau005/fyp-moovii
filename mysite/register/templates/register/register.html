@@ -15,18 +15,15 @@ Create An Account
 
     <form method="POST" class="form-group">
         {% csrf_token %}
-        <!-- {{form|crispy}} -->
     <h2>Profile</h2>
         <div class="form-row">
             <div class="form-group col-md-6">
               <label for="username">Username</label>
               {{form.username}}
-              <!-- <input type="text" class="form-control" name="username"> -->
             </div>
             <div class="form-group col-md-6">
               <label for="email">Email Address</label>
               {{form.email}}
-              <!-- <input type="text" class="form-control" name="email"> -->
             </div>
         </div>
 
@@ -34,12 +31,10 @@ Create An Account
             <div class="form-group col-md-6">
               <label for="password1">Password</label>
               {{form.password1}}
-              <!-- <input type="password" class="form-control" name="password1"> -->
             </div>
             <div class="form-group col-md-6">
               <label for="password2">Confirm Password</label>
               {{form.password2}}
-              <!-- <input type="password" class="form-control" name="password2"> -->
             </div>
         </div>
 
@@ -48,19 +43,26 @@ Create An Account
             <div class="form-group col-md-6">
               <label for="first_name">First Name</label>
               {{form.first_name}}
-              <!-- <input type="text" class="form-control" name="first_name"> -->
             </div>
             <div class="form-group col-md-6">
               <label for="last_name">Last Name</label>
               {{form.last_name}}
-              <!-- <input type="text" class="form-control" name="last_name"> -->
             </div>
         </div>
 
         <div class="form-row">
           <div class="form-group col-md-6">
-            <label for="genres">Your Birthday (YYYY-MM-DD)</label>
+            <label for="dob">Your Birthday (YYYY-MM-DD)</label>
             {{form.dob}}
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="gender">Gender</label>
+            <select name="gender_chosen" class="form-control" action="">
+              {% for gender in gender_list%}
+                 <option value="{{genres}}" >{{gender}}</option>
+               {% endfor %}
+           </select>
           </div>
 
           <div class="form-group col-md-6">
@@ -88,22 +90,18 @@ Create An Account
             <div class="form-group col-md-4">
               <label for="cc_number">Credit Card Number</label>
               {{form.cc_number}}
-              <!-- <input type="text" class="form-control" name="cc_number"> -->
             </div>
             <div class="form-group col-md-4">
               <label for="cc_name">Name</label>
               {{form.cc_name}}
-              <!-- <input type="text" class="form-control" name="cc_name"> -->
             </div>
             <div class="form-group col-md-2">
               <label for="cc_expirydate">Expiry Date</label>
               {{form.cc_expirydate}}
-              <!-- <input type="text" class="form-control" name="cc_expirydate"> -->
             </div>
             <div class="form-group col-md-2">
               <label for="cc_cvv">CVV</label>
               {{form.cc_cvv}}
-              <!-- <input type="text" class="form-control" name="cc_cvv"> -->
             </div>
           </div>
         </div>

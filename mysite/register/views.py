@@ -28,7 +28,9 @@ def register(request):
     split_genre = list(dict.fromkeys(split_genre))
     split_genre = list(filter(None, split_genre))
     msg = ''
-    
+
+    gender_list = ['Male','Female']
+
     # Form for registration
     if request.method == "POST":
         
@@ -37,7 +39,8 @@ def register(request):
         if form.is_valid():
             username = form.cleaned_data["username"]
             email = form.cleaned_data["email"]
-            dob = form.cleaned_data["dob"]            
+            dob = form.cleaned_data["dob"]      
+            gender = request.POST['gender_chosen']
             g = request.POST['genres_chosen']
             paymentRadio = request.POST['paymentRadio'] 
             
@@ -58,7 +61,7 @@ def register(request):
                     user = form.save(commit=False)  
                     user.is_active = False  
                     user.save()
-                    t = Account(user=user, genres=g, dob=dob)
+                    t = Account(user=user, genres=g, gender=gender, dob=dob)
                     t.save()
                     print('account save')   
 
@@ -132,6 +135,7 @@ def register(request):
     
     context = {"form":form, 
                 "split_genre":split_genre, 
+                "gender_list":gender_list,
                 "msg":msg
     }
 

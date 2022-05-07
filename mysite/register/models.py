@@ -12,6 +12,11 @@ from creditcards.models import CardNumberField, CardExpiryField, SecurityCodeFie
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     dob = models.DateField(default=None, blank=True, null=True)
+    gender = models.CharField(
+        default='Male',
+        max_length=6,
+        choices=[('Male','Male'),
+                ('Female','Female'),])
     genres = models.CharField(
         max_length=30,
         choices=[('Adventure','Adventure'),

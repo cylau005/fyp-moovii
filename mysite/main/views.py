@@ -18,11 +18,12 @@ import pandas as pd
 # CF Approach - Pearson Correlation
 def cf_approach(request, id, user, user_score):  
     
-    # CF take similar user who has the similar birthday Year (+5 or -5) as well
-    dob = Account.objects.get(user=user.id)
-    myyear = dob.dob.year
+    # CF take similar user who has the similar birthday Year (+5 or -5) as well and same gender
+    accountinfo = Account.objects.get(user=user.id)
+    myyear = accountinfo.dob.year    
+    mygender = accountinfo.gender
 
-    sameBirth = Account.objects.filter(dob__year__range=[myyear-5, myyear+5])
+    sameBirth = Account.objects.filter(dob__year__range=[myyear-5, myyear+5], gender=mygender)
     sameBirthId = []
     for i in sameBirth:
         sameBirthId.append(i.id)
@@ -159,8 +160,8 @@ def cf_approach(request, id, user, user_score):
         final = pd.merge(recommendation_df, movie_DF, on='movieId')
         final = final[final['movieId'] != id]
         
-        # Only recommend the movie if weighed average score is equal or greater than 3
-        final =  final[final['w.avg_score']>=3]
+        # Only recommend the movie if weighed average score is equal or greater than 4
+        final =  final[final['w.avg_score']>=4]
 
         # Get all the rating done by the user
         user_Rating = RatingList.objects.filter(user_id=user, action='Rate')
@@ -206,11 +207,11 @@ def home(request):
         intMovie = Interact_List.objects.filter(user_id=user).order_by('?')[:6]
 
         # If favourite genre found, filter 6 movies that related to the genre 
-        # and overall rating is equal or greater than 3
+        # and overall rating is equal or greater than 4
         if len(fav_genre) > 0:
             for g in fav_genre:
                 gen=g.genres
-                genmovies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=3).order_by('?')[:6]
+                genmovies = MovieList.objects.filter(movie_genre__icontains=gen, overall_rating__gte=4).order_by('?')[:6]
         
         # Else, get all movies
         else:
@@ -306,7 +307,7 @@ def rating(request, id):
         
 
         # Getting all high rated movies that related to the movie genre you have visited
-        intMovie = MovieList.objects.filter(movie_genre__in=split_genre, overall_rating__gte=3). \
+        intMovie = MovieList.objects.filter(movie_genre__in=split_genre, overall_rating__gte=4). \
                     exclude(id__in=cflistMovie).order_by('?')[:6]
         
         # Delete the current relevant movie you might like
