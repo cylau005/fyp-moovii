@@ -15,6 +15,7 @@ Create An Account
 
     <form method="POST" class="form-group">
         {% csrf_token %}
+        <!-- {{form|crispy}} -->
     <h2>Profile</h2>
         <div class="form-row">
             <div class="form-group col-md-6">
@@ -24,6 +25,7 @@ Create An Account
             <div class="form-group col-md-6">
               <label for="email">Email Address</label>
               {{form.email}}
+
             </div>
         </div>
 
