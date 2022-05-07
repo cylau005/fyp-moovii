@@ -25,7 +25,6 @@ Create An Account
             <div class="form-group col-md-6">
               <label for="email">Email Address</label>
               {{form.email}}
-
             </div>
         </div>
 
@@ -62,7 +61,7 @@ Create An Account
             <label for="gender">Gender</label>
             <select name="gender_chosen" class="form-control" action="">
               {% for gender in gender_list%}
-                 <option value="{{genres}}" >{{gender}}</option>
+                 <option value="{{gender}}" >{{gender}}</option>
                {% endfor %}
            </select>
           </div>
@@ -154,7 +153,6 @@ Create An Account
     </form>
     {{ msg }}
     <br /><br /><br />
-
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
       $(document).ready(function(){
