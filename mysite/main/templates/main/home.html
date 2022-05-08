@@ -75,7 +75,7 @@ function closeBanner() {
 {% if request.user.is_authenticated %}
 
 {% else %}
-<div class="form-popup" id="popUpBanner">
+<div class="form-popup" id="popUpBanner" {{hideBanner}}>
     <h1 onclick="closeBanner()">
       <br />
       Why are you just watching the movie when <br />

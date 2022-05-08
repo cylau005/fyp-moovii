@@ -194,6 +194,7 @@ def home(request):
     intMovie = None
     select_genre_done = None
     msg = ''
+    hideBanner=''
 
     # If is registered viewer
     if request.user.is_authenticated:
@@ -239,13 +240,14 @@ def home(request):
         form = MovieSearchForm(request.POST)
         if form.is_valid():
             movies_search = form.cleaned_data["movie_name"]
-            movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search)
-            
+            movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search) or MovieList.objects.filter(movie_genre__icontains=movies_search)
+            hideBanner = 'style=display:none;'
+
             if not movies_search_done:
                 msg = 'No movie found'
                 print(msg)
             else:
-                movies = MovieList.objects.filter(movie_name__icontains=movies_search)
+                movies = MovieList.objects.filter(movie_name__icontains=movies_search) or MovieList.objects.filter(movie_genre__icontains=movies_search)
                 msg = 'Please refer below'       
 
         if 'movie_genre' in request.POST:
@@ -264,6 +266,7 @@ def home(request):
                 "msg":msg,
                 "intMovie":intMovie,
                 "split_genre":split_genre,
+                "hideBanner":hideBanner,
     }
     
     return render(request, "main/home.html", context)
@@ -515,18 +518,20 @@ def movieListing(request):
         form = MovieSearchForm(request.POST)
         if form.is_valid():
             movies_search = form.cleaned_data["movie_name"]
-            movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search)
+            movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search) or MovieList.objects.filter(movie_genre__icontains=movies_search)
             
             if not movies_search_done:
                 msg = 'No movie found'
                 print(msg)
             else:
-                movies = MovieList.objects.filter(movie_name__icontains=movies_search)
+                movies = MovieList.objects.filter(movie_name__icontains=movies_search) or MovieList.objects.filter(movie_genre__icontains=movies_search)
                 msg = 'Please refer below'
 
     else:
         form = MovieSearchForm()
         movielist_form = MovieList()
+
+
 
     context = {"movielist": movies,
                 "form":form,
@@ -611,98 +616,38 @@ def movieListingDelete(request):
 
     return render(request, "main/movie_listing_delete.html", context)
 
-# Function for RatingList(Admin) page
-def rateListing(request):
-    ratings = RatingList.objects.all().order_by('-id')
-    context = {"ratelist": ratings
-    }
-    return render(request, "main/rate_listing.html", context)
-
-# Function for admin to add rating on behalf of customer manually
-def rateListingAdd(request):
-    msg = ''
-
-    # Get required data from the form
-    if request.method == "POST":
-        form = AddRatingForm(request.POST)
-        if form.is_valid():
-            s = form.cleaned_data["rating_score"]
-            m = form.cleaned_data["movie_id"]
-            u = form.cleaned_data["user_id"]
-
-            user_check = User.objects.filter(username=u)
-            print(user_check)
-
-            # Prefixed as Rate action and earn 2 points
-            # Because admin do not has access to customer's social media
-            a = "Rate"
-            p = 2
-            
-            # If user not found, print message
-            if not user_check:
-                msg = 'User not exists'
-                print(msg)
-
-            # Else, add record
-            else:
-                user = User.objects.get(username=u)
-                t = RatingList(user_id=user, rating_score=s, movie_id=m, action=a)
-                r = Reward_Point(user_id=user, point=p)
-                t.save()
-                r.save()
-
-                msg = "Rating added"
-                print(msg)
-            
-        else:
-            msg = "Please check if you field in correctly"
-            
-        return render(request, "main/rate_listing_add.html", {"form":form,"msg":msg})
-        
-    else:
-        form = AddRatingForm()
-        add_movie_form = RatingList()
-    
-    return render(request, "main/rate_listing_add.html", {"form":form})
-
-# Function for admin to delete rating based on rating ID
-def rateListingDelete(request):
-    msg = ''
-    if request.method == "POST":
-        form = DeleteRatingForm(request.POST)
-        if form.is_valid():
-            s = form.cleaned_data["id"]
-            print(s)
-            rating_check = RatingList.objects.filter(id=s)
-            
-            # If ratingID not found, print message
-            if not rating_check:
-                msg = 'Rating not exists'
-            
-            # Else, delete record
-            else:
-                RatingList.objects.filter(id=s).delete()
-                msg = "Rating deleted"
-            
-        else:
-            msg = "Please check if you field in correctly"
-                    
-    else:
-        form = DeleteRatingForm()
-        delete_movie_form = RatingList()
-    
-    context = {"form":form, 
-                "msg":msg
-    }
-
-    return render(request, "main/rate_listing_delete.html", context)
-
 # Function for UserListing(Admin) page
 def userListing(request):
     
     msg = ''
     users = User.objects.all()
 
+    # Form for filter blacklist or whitelist
+    if 'blackWhiteList' in request.POST:
+        bwOption = request.POST['blackWhiteList']
+        if bwOption == 'blacklist':
+            users = User.objects.filter(is_active=0)
+        elif bwOption == 'whitelist':
+            users = User.objects.filter(is_active=1)
+        else:
+            users = User.objects.all()
+
+    # Form for blacklist or un-blacklist user
+    if 'blacklistUser' in request.POST:
+        tempUser = request.POST['blacklistUser']
+        print(tempUser)
+        user = tempUser[2:100]
+        blacklistOption = tempUser[:1]
+        targetUser = User.objects.get(id=user)
+        print(1)
+        if blacklistOption == '0':
+            targetUser.is_active = False
+            targetUser.save()
+        else:
+            targetUser.is_active = True
+            targetUser.save()
+
+    
     # Form for search User function by username
     if request.method == "POST":
         form = UserSearchForm(request.POST)
@@ -720,6 +665,7 @@ def userListing(request):
     else:
         form = UserSearchForm()
         user_form = User()
+
 
     context = {"userlist": users,
                 "form":form, 

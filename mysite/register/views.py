@@ -43,6 +43,7 @@ def register(request):
             gender = request.POST['gender_chosen']
             g = request.POST['genres_chosen']
             paymentRadio = request.POST['paymentRadio'] 
+            print(gender)
             
             # Unique username and email address check
             user_check = User.objects.filter(username=username)
@@ -98,7 +99,7 @@ def register(request):
                     user = form.save(commit=False)  
                     user.is_active = False  
                     user.save()
-                    t = Account(user=user, genres=g)
+                    t = Account(user=user, genres=g, gender=gender, dob=dob)
                     t.save()
                     print('account save')
                     d = BankIn(user=user)

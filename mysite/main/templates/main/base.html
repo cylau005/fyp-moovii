@@ -108,23 +108,27 @@
         <div class="nav">
             <ul>
                 <li><a href="/home">Home</a></li>
-                <li><a href="/aboutus">About Us</a></li>
-                
-                {% if request.user.is_authenticated %}
-                    <li><a href="/profile">Profile</a></li>
+
+                {% if request.user.is_staff %}
+                    <li><a href="/movie_listing">MovieList(Admin)</a></li>
+                    <li><a href="/user_listing">UserListing(Admin)</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                     
                     <span>Welcome <b>{{ user }}</b></span>
-                {% else %}
-                    <li><a href="/register">Registration</a></li>
-                    <li><a href="/login">Login</a></li>
+                {% else %}                
+                    <li><a href="/aboutus">About Us</a></li>
+                
+                    {% if request.user.is_authenticated %}
+                        <li><a href="/profile">Profile</a></li>
+                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                        
+                        <span>Welcome <b>{{ user }}</b></span>
+                    {% else %} 
+                        <li><a href="/register">Registration</a></li>
+                        <li><a href="/login">Login</a></li>
+                    {% endif %}
                 {% endif %}
-
-                {% if request.user.is_staff %}
-                <li><a href="/movie_listing">MovieList(Admin)</a></li>
-                <li><a href="/rate_listing">RatingList(Admin)</a></li>
-                <li><a href="/user_listing">UserListing(Admin)</a></li>
-                {% endif %}
+                
             </ul>
         </div>
         <div style="background-color:#888; color:white;">

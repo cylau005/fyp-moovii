@@ -4,13 +4,24 @@
 View List
 {% endblock %}
 
+
 {% block content %}
     {% if request.user.is_staff %}
         <h1>Admin - User Listing</h1>
         
         <br />
-        <a href="/user_listing">Reset Page</a> | 
-        <a href="/user_blacklist">Blacklist User</a>
+        <form method="post" class="form-group" >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" name="blackWhiteList" value="blacklist">
+                List of Blacklist User
+            </button>
+            <button type="submit" class="btn btn-primary" name="blackWhiteList" value="whitelist">
+                List of Whitelist User
+            </button>
+            <button type="submit" class="btn btn-primary" name="blackWhiteList" value="reset">
+                List of All User
+            </button>
+        </form>
 
         <form method="post" class="form-group" style="float:right;">
             {% csrf_token %}
@@ -33,6 +44,7 @@ View List
             <td>First Name</td>
             <td>Last Name</td>
             <td>Favourite Genre</td>
+            <td width="300px">Blacklist Function</td>
         </tr>
 
         {% for user in userlist %}     
@@ -44,6 +56,17 @@ View List
                 <td>{{user.first_name}}</td>
                 <td>{{user.last_name}}</td>
                 <td>{{user.account.genres}}</td>
+                <td>
+                    <form method="post" class="form-group">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" name="blacklistUser" value="0 {{user.id}}">
+                            Blacklist
+                        </button>
+                        <button type="submit" class="btn btn-primary" name="blacklistUser" value="1 {{user.id}}">
+                            Whitelist
+                        </button>
+                    </form>
+                </td>
 
             </tr>           
         {% endfor %}

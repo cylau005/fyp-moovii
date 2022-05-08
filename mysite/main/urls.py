@@ -28,10 +28,6 @@ path('movie_listing/', views.movieListing, name="movie_listing"),
 path('movie_listing_add/', views.movieListingAdd, name="movie_listing_add"),
 path('movie_listing_delete/', views.movieListingDelete, name="movie_listing_delete"),
 
-path('rate_listing/', views.rateListing, name="rate_listing"),
-path('rate_listing_add/', views.rateListingAdd, name="rate_listing_add"),
-path('rate_listing_delete/', views.rateListingDelete, name="rate_listing_delete"),
-
 path('user_listing/', views.userListing, name="user_listing"),
 path('user_blacklist/', views.userBlacklist, name="user_blacklist"),
 
