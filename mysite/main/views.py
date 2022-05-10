@@ -563,7 +563,8 @@ def movieListingAdd(request):
             movie_check = MovieList.objects.filter(id=i)
             movie_name_check = MovieList.objects.filter(movie_name=n)
             print(movie_check)
-            if not movie_check or not movie_name_check:
+            print(movie_name_check)
+            if not movie_name_check:
                 t = MovieList(id=i, movie_name=n, movie_genre=g, overall_rating=a, date_release=d, movie_image_url=u)
                 msg = "Movie added"
                 t.save()
