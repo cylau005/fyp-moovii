@@ -241,7 +241,6 @@ def home(request):
         if form.is_valid():
             movies_search = form.cleaned_data["movie_name"]
             movies_search_done = MovieList.objects.filter(movie_name__icontains=movies_search) or MovieList.objects.filter(movie_genre__icontains=movies_search)
-            hideBanner = 'style=display:none;'
 
             if not movies_search_done:
                 msg = 'No movie found'
@@ -254,6 +253,10 @@ def home(request):
             select_genre = request.POST['movie_genre']
             select_genre_done = MovieList.objects.filter(movie_genre__icontains=select_genre).order_by('?')
             movies = select_genre_done 
+        
+        # Hide promotion text banner if Search function done or Filter function done in Homepage
+        hideBanner = 'style=display:none;'
+
     else:
         form = MovieSearchForm()
         movielist_form = MovieList()
