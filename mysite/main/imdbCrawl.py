@@ -78,12 +78,11 @@ while b < len(movieArray):
 
     # If movie found in master list, print message
     if movieArray[b] in allMovieArray:
-        print('Movie exists')
+        print(movieArray[b], '.Movie exists in database..Skipping..' )
     
     # Else, perform Insert statement
     else:
-        print(movieArray[b])
-        print('Inserting')
+        print(movieArray[b], 'not exists in database..Inserting..')
         max_id += 1
         print(max_id)
             
