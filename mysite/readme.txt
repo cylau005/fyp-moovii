@@ -2,6 +2,11 @@ Pearson Correlation Rating
 Due to live database size, we are unable to import too much data from MovieLens into the system.
 Hence, the Pearson Correlation (CF) performance might be a bit weak.
 
+Things to take note before start Pearson Correalation (CF) testing,
+1. For testing purpose, please sign up your account with DOB from Year 2017 to 2027
+2. Please sign up your account with Gender Male
+(The reason is because our database testing data, DOB for all users are DOB Year 2022 and Gender Male)
+
 To perform Pearson Correlation (CF) testing,
 1. Please sign up an account
 2. Activate your account from mailbox
