@@ -99,7 +99,7 @@ def register(request):
                         )  
                         emailSend.send()  
                         msg = 'Account created successfully. Please check your mailbox and comfirm your email address'
-                    
+                        print(msg)
                     else:
                         msg = 'Please check the payment detail'
 
@@ -130,6 +130,7 @@ def register(request):
                     )  
                     emailSend.send()  
                     msg = 'We will verify your payment and activate your account within 3 business days'
+                    print(msg)
             else:
                 msg = 'Username / Email address exists. Please try other'
         else:
