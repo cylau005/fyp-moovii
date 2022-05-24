@@ -43,7 +43,6 @@ def register(request):
             gender = request.POST['gender_chosen']
             g = request.POST['genres_chosen']
             paymentRadio = request.POST['paymentRadio'] 
-            print(gender)
             
             # Unique username and email address check
             user_check = User.objects.filter(username=username)
@@ -92,11 +91,13 @@ def register(request):
                             'token':token,  
                         })  
 
-                        to_email = form.cleaned_data.get('email')  
-                        email = EmailMessage(  
+                        print('Sending email...')
+
+                        to_email = email
+                        emailSend = EmailMessage(  
                                     mail_subject, message, to=[to_email]  
                         )  
-                        email.send()  
+                        emailSend.send()  
                         msg = 'Account created successfully. Please check your mailbox and comfirm your email address'
                     
                     else:
@@ -122,16 +123,13 @@ def register(request):
                     current_site = get_current_site(request)  
                     message = render_to_string('register/acc_active_email_bi.html', {  
                         'user': user,  
-                        'domain': current_site.domain,  
-                        'uid':urlsafe_base64_encode(force_bytes(user.pk)),  
-                        'token':default_token_generator.make_token(user),  
                     })  
 
-                    to_email = form.cleaned_data.get('email')  
-                    email = EmailMessage(  
+                    to_email = email
+                    emailSend = EmailMessage(  
                                 mail_subject, message, to=[to_email]  
                     )  
-                    email.send()  
+                    emailSend.send()  
                     msg = 'We will verify your payment and activate your account within 3 business days'
             else:
                 msg = 'Username / Email address exists. Please try other'
