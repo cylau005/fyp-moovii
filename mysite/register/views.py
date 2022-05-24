@@ -74,13 +74,22 @@ def register(request):
                         
                         # Trigger account activation email to registered user
                         # To get the domain of the current site  
-                        current_site = get_current_site(request)  
+                        
+                        #current_site = get_current_site(request)  
+                        domain = 'fyp-moovii.herokuapp.com'
+                        uid = urlsafe_base64_encode(force_bytes(user.pk))
+                        token = default_token_generator.make_token(user)
+
+                        print(domain)
+                        print(uid)
+                        print(token)
+
                         mail_subject = 'Activate Your Account'  
                         message = render_to_string('register/acc_active_email.html', {  
                             'user': user,  
-                            'domain': current_site.domain,  
-                            'uid':urlsafe_base64_encode(force_bytes(user.pk)),  
-                            'token':default_token_generator.make_token(user),  
+                            'domain': domain,  
+                            'uid':uid,  
+                            'token':token,  
                         })  
 
                         to_email = form.cleaned_data.get('email')  
