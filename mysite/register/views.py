@@ -119,8 +119,7 @@ def register(request):
                     # Email customer and say we will activate your account after confirming your payment
                     # Admin to check if receive money in bank account, if yes, activate account manually
                     mail_subject = 'We will activate your account as soon as possible'  
-                     # To get the domain of the current site  
-                    current_site = get_current_site(request)  
+                     
                     message = render_to_string('register/acc_active_email_bi.html', {  
                         'user': user,  
                     })  
